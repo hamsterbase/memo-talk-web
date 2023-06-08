@@ -4,6 +4,14 @@ import { MemoTalkContainer } from './memo-talk.tsx';
 
 const memoTalkCore = new MemoTalkCore();
 
+memoTalkCore.onUpdate(() => {
+  localStorage.setItem('memoTalks', memoTalkCore.encode());
+});
+
+if (localStorage.getItem('memoTalks')) {
+  memoTalkCore.merge(localStorage.getItem('memoTalks') as string);
+}
+
 export interface Props {
   memoTalkCore: MemoTalkCore;
 }
