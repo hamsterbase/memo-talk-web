@@ -15,7 +15,7 @@ export interface MemoTalk {
 export interface IMemoTalkCore {
   createMemoTalk(content: string): string;
 
-  getMemoTalkById(id: string): MemoTalk;
+  getMemoTalkById(id: string): MemoTalk | null;
 
   getMemoTalkList(): MemoTalk[];
 
@@ -39,6 +39,7 @@ const enum YDocKey {
 
 export class MemoTalkCore implements IMemoTalkCore {
   private ydoc: Y.Doc;
+
   constructor() {
     this.ydoc = new Y.Doc();
   }
@@ -61,23 +62,43 @@ export class MemoTalkCore implements IMemoTalkCore {
     return id;
   }
 
-  getMemoTalkById(id: string): MemoTalk {
+  getMemoTalkById(id: string): MemoTalk | null {
     const memoTalk = this.ydoc.getMap(id);
+    const createTime = memoTalk.get("createTime") as number;
+    // 如果没有 createTime, 说明这个 memoTalk 不存在
+    if (typeof createTime !== "number") {
+      return null;
+    }
+    if (memoTalk.get("deleted")) {
+      return null;
+    }
     return {
       id,
       content: memoTalk.get("content") as string,
-      createTime: memoTalk.get("createTime") as number,
+      createTime,
     };
   }
 
   getMemoTalkList(): MemoTalk[] {
     const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
-    return memoTalksArray.map((id) => this.getMemoTalkById(id));
+    return memoTalksArray
+      .map((id) => this.getMemoTalkById(id))
+      .filter((o): o is MemoTalk => !!o);
   }
 
   deleteMemoTalkById(id: string): void {
+    if (!this.getMemoTalkById(id)) {
+      throw new Error("memoTalk not exist");
+    }
     const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
-    memoTalksArray.delete(memoTalksArray.toArray().indexOf(id));
+    const index = memoTalksArray.toArray().indexOf(id);
+    if (index !== -1) {
+      const memoTalk = this.ydoc.getMap(id);
+      memoTalk.set("deleted", true);
+      memoTalksArray.delete(index);
+    } else {
+      throw new Error("memoTalk not exist");
+    }
   }
 
   encode(): string {
