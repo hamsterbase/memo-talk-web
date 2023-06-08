@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import * as Y from "yjs";
-import { fromUint8Array, toUint8Array } from "js-base64";
+import { nanoid } from 'nanoid';
+import * as Y from 'yjs';
+import { fromUint8Array, toUint8Array } from 'js-base64';
 export interface MemoTalk {
   id: string;
   content: string;
@@ -27,14 +27,16 @@ export interface IMemoTalkCore {
   encode(): string;
 
   merge(data: string): void;
+
+  onUpdate(handler: () => void): void;
 }
 
 const enum YDocKey {
   /**
    * 避免 id 重复
    */
-  id = "id",
-  memoTalks = "memoTalks",
+  id = 'id',
+  memoTalks = 'memoTalks',
 }
 
 export class MemoTalkCore implements IMemoTalkCore {
@@ -45,8 +47,8 @@ export class MemoTalkCore implements IMemoTalkCore {
   }
 
   createMemoTalk(content: string): string {
-    if (typeof content !== "string") {
-      throw new Error("content must be string");
+    if (typeof content !== 'string') {
+      throw new Error('content must be string');
     }
     const idMap = this.ydoc.getMap(YDocKey.id);
     let id: string = nanoid();
@@ -56,25 +58,25 @@ export class MemoTalkCore implements IMemoTalkCore {
     const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
 
     const memoTalk = this.ydoc.getMap(id);
-    memoTalk.set("content", content ?? "");
-    memoTalk.set("createTime", Date.now());
+    memoTalk.set('content', content ?? '');
+    memoTalk.set('createTime', Date.now());
     memoTalksArray.push([id]);
     return id;
   }
 
   getMemoTalkById(id: string): MemoTalk | null {
     const memoTalk = this.ydoc.getMap(id);
-    const createTime = memoTalk.get("createTime") as number;
+    const createTime = memoTalk.get('createTime') as number;
     // 如果没有 createTime, 说明这个 memoTalk 不存在
-    if (typeof createTime !== "number") {
+    if (typeof createTime !== 'number') {
       return null;
     }
-    if (memoTalk.get("deleted")) {
+    if (memoTalk.get('deleted')) {
       return null;
     }
     return {
       id,
-      content: memoTalk.get("content") as string,
+      content: memoTalk.get('content') as string,
       createTime,
     };
   }
@@ -88,16 +90,16 @@ export class MemoTalkCore implements IMemoTalkCore {
 
   deleteMemoTalkById(id: string): void {
     if (!this.getMemoTalkById(id)) {
-      throw new Error("memoTalk not exist");
+      throw new Error('memoTalk not exist');
     }
     const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
     const index = memoTalksArray.toArray().indexOf(id);
     if (index !== -1) {
       const memoTalk = this.ydoc.getMap(id);
-      memoTalk.set("deleted", true);
+      memoTalk.set('deleted', true);
       memoTalksArray.delete(index);
     } else {
-      throw new Error("memoTalk not exist");
+      throw new Error('memoTalk not exist');
     }
   }
 
@@ -107,5 +109,9 @@ export class MemoTalkCore implements IMemoTalkCore {
 
   merge(data: string): void {
     Y.applyUpdate(this.ydoc, toUint8Array(data));
+  }
+
+  onUpdate(handler: () => void): void {
+    this.ydoc.on('update', handler);
   }
 }

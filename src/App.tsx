@@ -1,48 +1,27 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { MemoTalk, MemoTalkCore } from './core/memo-talk-core.ts';
+import { MemoTalkContainer } from './memo-talk.tsx';
 
-interface MemoTalk {
-  id: string;
-  content: string;
-  createTime: number;
+const memoTalkCore = new MemoTalkCore();
+
+export interface Props {
+  memoTalkCore: MemoTalkCore;
 }
 
-interface Props {
-  memoTalks: MemoTalk[];
-  onCreateMemoTalk(content: string): void;
-}
+export const App: React.FC<Props> = (props) => {
+  const [memoTalks, setMemoTalks] = useState<MemoTalk[]>([]);
 
-const App: React.FC<Props> = ({ memoTalks, onCreateMemoTalk }) => {
-  const [inputValue, setInputValue] = useState('');
-
-  const handleSubmit = () => {
-    if (inputValue.trim()) {
-      onCreateMemoTalk(inputValue);
-      setInputValue('');
-    }
-  };
+  useEffect(() => {
+    setMemoTalks(props.memoTalkCore.getMemoTalkList());
+  }, [props.memoTalkCore]);
 
   return (
-    <div className="App">
-      <div className="alert">此项目还在开发中，请不要使用</div>
-      <div className="messages">
-        {memoTalks.map((memoTalk) => (
-          <div key={memoTalk.id} className="message">
-            {memoTalk.content}
-          </div>
-        ))}
-      </div>
-      <div className="input-container">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="请输入内容"
-        />
-        <button onClick={handleSubmit}>发送</button>
-      </div>
-    </div>
+    <MemoTalkContainer
+      memoTalks={memoTalks}
+      onCreateMemoTalk={(content: string) => {
+        memoTalkCore.createMemoTalk(content);
+        setMemoTalks(memoTalkCore.getMemoTalkList());
+      }}
+    />
   );
 };
-
-export default App;
