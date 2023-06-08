@@ -77,4 +77,19 @@ describe("MemoTalkCore", () => {
       content2,
     ]);
   });
+
+  test("should throw an error if the MemoTalk does not exist", () => {
+    const invalidId = "invalid-id";
+    expect(() => memoTalkCore.deleteMemoTalkById(invalidId)).toThrowError(
+      "memoTalk not exist"
+    );
+  });
+
+  test("should throw an error if trying to delete the same MemoTalk twice", () => {
+    const id = memoTalkCore.createMemoTalk("note");
+    memoTalkCore.deleteMemoTalkById(id);
+    expect(() => memoTalkCore.deleteMemoTalkById(id)).toThrowError(
+      "memoTalk not exist"
+    );
+  });
 });
