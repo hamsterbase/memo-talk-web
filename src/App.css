@@ -1,42 +1,60 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.App {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.alert {
+  background-color: white;
+  color: red;
+  font-weight: bold;
+  padding: 10px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.messages {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.message {
+  background-color: #1f7efc;
+  border-radius: 8px;
+  color: white;
+  margin-bottom: 8px;
+  padding: 8px;
+  max-width: 70%;
+  word-wrap: break-word;
+  align-self: flex-end;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.input-container {
+  display: flex;
+  padding: 10px;
+  align-items: center;
 }
 
-.card {
-  padding: 2em;
+input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  outline: none;
 }
 
-.read-the-docs {
-  color: #888;
+button {
+  background-color: #1f7efc;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+  padding: 8px 16px;
+}
+
+button:hover {
+  background-color: #0f6edb;
 }

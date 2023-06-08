@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface MemoTalk {
+  id: string;
+  content: string;
+  createTime: number;
 }
 
-export default App
+interface Props {
+  memoTalks: MemoTalk[];
+  onCreateMemoTalk(content: string): void;
+}
+
+const App: React.FC<Props> = ({ memoTalks, onCreateMemoTalk }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = () => {
+    if (inputValue.trim()) {
+      onCreateMemoTalk(inputValue);
+      setInputValue('');
+    }
+  };
+
+  return (
+    <div className="App">
+      <div className="alert">此项目还在开发中，请不要使用</div>
+      <div className="messages">
+        {memoTalks.map((memoTalk) => (
+          <div key={memoTalk.id} className="message">
+            {memoTalk.content}
+          </div>
+        ))}
+      </div>
+      <div className="input-container">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="请输入内容"
+        />
+        <button onClick={handleSubmit}>发送</button>
+      </div>
+    </div>
+  );
+};
+
+export default App;
