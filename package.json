@@ -9,15 +9,14 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
-  "dependencies": {
+  "devDependencies": {
+    "fake-indexeddb": "^4.0.1",
     "js-base64": "^3.7.5",
     "nanoid": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "vitest": "^0.32.0",
-    "yjs": "^13.6.2"
-  },
-  "devDependencies": {
+    "yjs": "^13.6.2",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
