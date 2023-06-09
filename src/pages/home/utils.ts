@@ -35,3 +35,8 @@ export function decryptData(encryptedData: string, key: string): string {
   );
   return decrypted;
 }
+
+export function sha256(input: string): string {
+  const hash = CryptoJS.SHA256(input).toString(CryptoJS.enc.Hex);
+  return hash;
+}

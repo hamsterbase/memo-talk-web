@@ -20,6 +20,10 @@ export const App: React.FC<Props> = (props) => {
 
   useEffect(() => {
     setMemoTalks(props.memoTalkCore.getMemoTalkList());
+
+    props.memoTalkCore.onUpdate(() => {
+      setMemoTalks(props.memoTalkCore.getMemoTalkList());
+    });
   }, [props.memoTalkCore]);
 
   return (

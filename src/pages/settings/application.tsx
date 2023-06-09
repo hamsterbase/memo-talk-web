@@ -100,7 +100,13 @@ export const App: React.FC<{
 
   return (
     <div>
-      <NavBar onBack={() => window.history.back()}>设置</NavBar>
+      <NavBar
+        onBack={() => {
+          window.location.href = '/';
+        }}
+      >
+        设置
+      </NavBar>
       <Space />
       <List mode="card">
         <List.Item

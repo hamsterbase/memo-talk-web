@@ -9,7 +9,7 @@ export enum StorageKeys {
 }
 
 export const defaultSettingValue = {
-  [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com/',
+  [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com',
   [StorageKeys.hamsterUsername]: '',
   [StorageKeys.hamsterPassword]: '',
 };
