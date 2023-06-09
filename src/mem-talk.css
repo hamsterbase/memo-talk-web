@@ -1,22 +1,6 @@
-.App {
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.alert {
-  background-color: white;
-  color: red;
-  font-weight: bold;
-  padding: 10px;
-  text-align: center;
-}
-
 .messages {
-  flex-grow: 1;
-  padding: 10px;
-  overflow-y: auto;
+  height: 100%;
+  overflow: scroll;
 }
 
 .message {
@@ -28,33 +12,4 @@
   max-width: 70%;
   word-wrap: break-word;
   align-self: flex-end;
-}
-
-.input-container {
-  display: flex;
-  padding: 10px;
-  align-items: center;
-}
-
-input {
-  flex-grow: 1;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 8px;
-  outline: none;
-}
-
-button {
-  background-color: #1f7efc;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  margin-left: 10px;
-  padding: 8px 16px;
-}
-
-button:hover {
-  background-color: #0f6edb;
 }
