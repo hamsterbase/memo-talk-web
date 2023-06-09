@@ -30,12 +30,18 @@ async function start() {
       return;
     }
     const sdk = new FileAPISDK(url);
+
+    // 生成加密密钥
+    // userToken 用来标记用户身份，也是服务器文件夹的名字
+    // encryptionKey 是文件加密密码， encryptionKey 不会发送到服务
     const { userToken, encryptionKey } = generateKeys(username, passowrd);
 
     // 获取服务器数据库列表
     const files: string[] = await sdk.getList(userToken);
 
     const mergedFiles: string[] = [];
+
+    // 把服务器上的文件和本地合并，合并后加入等待删除列表
     for (const file of files) {
       try {
         const remoteData = await sdk.getFile(userToken, file);
@@ -47,10 +53,14 @@ async function start() {
       }
     }
 
-    // 加密数据
+    // 获取本地最新数据，加密
     const currentData = encryptData(memoTalkCore.encode(), encryptionKey);
     const fileName = sha256(currentData);
+
+    // 把加密后的文档存到服务器
     await sdk.createFile(userToken, fileName, currentData);
+
+    // 因为数据已经合并到本地了，所以把服务器的删掉
     for (const mergedFile of mergedFiles) {
       try {
         await sdk.deleteFile(userToken, mergedFile);
