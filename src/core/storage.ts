@@ -1,5 +1,7 @@
 export type SettingsValue = string | boolean;
 
+export const DatabaseKey = 'hamsterDatabase';
+
 export enum StorageKeys {
   'hamsterbaseURL' = 'hamsterbaseURL',
   'hamsterUsername' = 'hamsterUsername',
@@ -11,6 +13,7 @@ export const defaultSettingValue = {
   [StorageKeys.hamsterUsername]: '',
   [StorageKeys.hamsterPassword]: '',
 };
+
 export type SettingType = typeof defaultSettingValue;
 
 export interface ISettingService {
