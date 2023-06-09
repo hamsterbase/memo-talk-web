@@ -39,10 +39,14 @@ async function start() {
     // 获取服务器数据库列表
     const files: string[] = await sdk.getList(userToken);
 
+    const currentHash = sha256(memoTalkCore.encode());
+
     const mergedFiles: string[] = [];
 
+    console.log(currentHash, files);
+
     // 把服务器上的文件和本地合并，合并后加入等待删除列表
-    for (const file of files) {
+    for (const file of files.filter((o) => currentHash !== o)) {
       try {
         const remoteData = await sdk.getFile(userToken, file);
         const database = decryptData(remoteData, encryptionKey);
@@ -53,9 +57,13 @@ async function start() {
       }
     }
 
+    const currentFile = memoTalkCore.encode();
+
+    //因为文件名是根据文件内容生成的，所以先生成文件名
+    const fileName = sha256(currentFile);
+
     // 获取本地最新数据，加密
-    const currentData = encryptData(memoTalkCore.encode(), encryptionKey);
-    const fileName = sha256(currentData);
+    const currentData = encryptData(currentFile, encryptionKey);
 
     // 把加密后的文档存到服务器
     await sdk.createFile(userToken, fileName, currentData);
@@ -69,7 +77,7 @@ async function start() {
       }
     }
   }
-  sync().then(console.log).catch(console.log);
+  sync().catch(console.log);
   memoTalkCore.onUpdate(() => {
     settingService.set(DatabaseKey, memoTalkCore.encode());
   });
