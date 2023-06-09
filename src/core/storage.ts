@@ -6,6 +6,13 @@ export enum StorageKeys {
   'hamsterPassword' = 'hamsterPassword',
 }
 
+export const defaultSettingValue = {
+  [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com/',
+  [StorageKeys.hamsterUsername]: '',
+  [StorageKeys.hamsterPassword]: '',
+};
+export type SettingType = typeof defaultSettingValue;
+
 export interface ISettingService {
   get<V extends SettingsValue>(key: string, defaultValue: V): Promise<V>;
 
