@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { MemoTalkCore } from '../../core/memo-talk-core.ts';
 import { App } from './application.tsx';
-import { MemoTalkCore } from './core/memo-talk-core.ts';
 
 const memoTalkCore = new MemoTalkCore();
 
