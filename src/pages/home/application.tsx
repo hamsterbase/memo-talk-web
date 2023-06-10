@@ -2,12 +2,14 @@ import { ActionSheet, Button, NavBar, SafeArea, TextArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { MemoTalk, MemoTalkCore } from '../../core/memo-talk-core.ts';
+import { SettingType } from '../../core/storage.ts';
 import { MemoTalkContainer } from '../../memo-talk.tsx';
 import styles from './application.module.css';
 import './main.tsx';
 
 export interface Props {
   memoTalkCore: MemoTalkCore;
+  settings: SettingType;
 }
 
 const useInnerHight = () => {
@@ -68,11 +70,7 @@ export const App: React.FC<Props> = (props) => {
   }, [props.memoTalkCore]);
 
   return (
-    <div
-      style={{
-        background: '#F7F8FA',
-      }}
-    >
+    <div>
       <NavBar
         back={null}
         right={
@@ -108,6 +106,7 @@ export const App: React.FC<Props> = (props) => {
         }}
       >
         <MemoTalkContainer
+          dominantHand={props.settings.dominantHand}
           memoTalks={memoTalks}
           onClick={(id) => {
             setClickMessage(id);
@@ -142,6 +141,11 @@ export const App: React.FC<Props> = (props) => {
               position: 'relative',
               background: 'white',
               marginTop: 8,
+              display: 'flex',
+              justifyContent:
+                props.settings.dominantHand === 'right'
+                  ? 'flex-end'
+                  : 'flex-start',
             }}
           >
             <Button

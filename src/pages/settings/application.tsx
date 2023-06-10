@@ -7,6 +7,8 @@ import {
   StorageKeys,
   defaultSettingValue,
 } from '../../core/storage';
+import Plam from '@icon-park/react/es/icons/Palm';
+import DatabaseSync from '@icon-park/react/es/icons/DatabaseSync';
 
 const CloudSync: React.FC<{
   visible: boolean;
@@ -110,7 +112,28 @@ export const App: React.FC<{
       <Space />
       <List mode="card">
         <List.Item
-          prefix={<UploadOutline />}
+          prefix={<Plam />}
+          extra={setting.dominantHand === 'right' ? '右手' : '左手'}
+          clickable
+          onClick={async () => {
+            const newSetting: SettingType = {
+              ...setting,
+              [StorageKeys.dominantHand]:
+                setting.dominantHand === 'right' ? 'left' : 'right',
+            };
+            await props.settingService.set(
+              StorageKeys.dominantHand,
+              setting.dominantHand === 'right' ? 'left' : 'right'
+            );
+            setSettings(newSetting);
+          }}
+        >
+          惯用手
+        </List.Item>
+      </List>
+      <List mode="card">
+        <List.Item
+          prefix={<DatabaseSync />}
           extra={isEnable ? '已开启' : '未开启'}
           clickable
           onClick={() => setVisible(true)}

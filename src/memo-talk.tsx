@@ -11,11 +11,15 @@ interface MemoTalk {
 
 interface Props {
   memoTalks: MemoTalk[];
-
+  dominantHand: 'left' | 'right';
   onClick(id: string): void;
 }
 
-const MemoTalkContainer: React.FC<Props> = ({ memoTalks, onClick }) => {
+const MemoTalkContainer: React.FC<Props> = ({
+  memoTalks,
+  onClick,
+  dominantHand,
+}) => {
   const container = useRef<HTMLDivElement | null>(null);
 
   const value = useRef(0);
@@ -60,6 +64,11 @@ const MemoTalkContainer: React.FC<Props> = ({ memoTalks, onClick }) => {
                 paddingTop: 8,
               }}
             >
+              {dominantHand === 'right' && (
+                <div className={styles.time}>
+                  {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                </div>
+              )}
               <MoreOne
                 className={styles['icon-left']}
                 style={{
@@ -70,9 +79,11 @@ const MemoTalkContainer: React.FC<Props> = ({ memoTalks, onClick }) => {
                   onClick(memoTalk.id);
                 }}
               />
-              <div className={styles.time}>
-                {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
-              </div>
+              {dominantHand === 'left' && (
+                <div className={styles.time}>
+                  {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                </div>
+              )}
             </div>
           </div>
         </div>

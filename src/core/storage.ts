@@ -6,12 +6,14 @@ export enum StorageKeys {
   'hamsterbaseURL' = 'hamsterbaseURL',
   'hamsterUsername' = 'hamsterUsername',
   'hamsterPassword' = 'hamsterPassword',
+  'dominantHand' = 'dominantHand',
 }
 
 export const defaultSettingValue = {
   [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com',
   [StorageKeys.hamsterUsername]: '',
   [StorageKeys.hamsterPassword]: '',
+  [StorageKeys.dominantHand]: 'right',
 };
 
 export type SettingType = typeof defaultSettingValue;

@@ -80,9 +80,11 @@ async function start() {
   memoTalkCore.onUpdate(() => {
     settingService.set(DatabaseKey, memoTalkCore.encode());
   });
+
+  const settings = await settingService.readConfig(defaultSettingValue);
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <App memoTalkCore={memoTalkCore}></App>
+      <App memoTalkCore={memoTalkCore} settings={settings}></App>
     </React.StrictMode>
   );
 }
