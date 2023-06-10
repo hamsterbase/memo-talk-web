@@ -3,25 +3,62 @@ import { MoreOutline } from 'antd-mobile-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { MemoTalk, MemoTalkCore } from '../../core/memo-talk-core.ts';
 import { MemoTalkContainer } from '../../memo-talk.tsx';
-import '../../global.css';
 import styles from './application.module.css';
+import './main.tsx';
 
 export interface Props {
   memoTalkCore: MemoTalkCore;
 }
 
+const useInnerHight = () => {
+  const [innerHeight, setHeight] = useState<number>(window.innerHeight);
+  useEffect(() => {
+    const onViewportResize = () => {
+      const viewportHeight = window.innerHeight;
+      setHeight(viewportHeight);
+    };
+
+    window.addEventListener('resize', onViewportResize);
+    return () => window.removeEventListener('reset', onViewportResize);
+  });
+  return { innerHeight };
+};
+
+const useFooterHeight = (innerHeight: number) => {
+  const [footerHeight, setPaddingBottom] = useState(0);
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const footerElement = ref.current;
+    new ResizeObserver(() => {
+      const rect = footerElement.getBoundingClientRect();
+      setPaddingBottom(innerHeight - rect.top);
+    }).observe(footerElement);
+  }, [innerHeight]);
+
+  return {
+    footerRef: ref,
+    footerHeight,
+  };
+};
+
 export const App: React.FC<Props> = (props) => {
   const [memoTalks, setMemoTalks] = useState<MemoTalk[]>([]);
   const [inputValue, setInputValue] = useState('');
 
-  const [paddingBottom, setPaddingBottom] = useState(0);
+  const { innerHeight } = useInnerHight();
 
-  const ref = useRef<HTMLDivElement | null>(null);
   const handleGoSetting = () => {
     window.location.href = '/settings/index.html';
   };
 
+  const { footerHeight, footerRef } = useFooterHeight(innerHeight);
+
   const [clickMessage, setClickMessage] = useState<string | null>(null);
+
+  const contentHeight = innerHeight - 45 - 20 - footerHeight;
 
   useEffect(() => {
     setMemoTalks(props.memoTalkCore.getMemoTalkList());
@@ -30,17 +67,12 @@ export const App: React.FC<Props> = (props) => {
     });
   }, [props.memoTalkCore]);
 
-  useEffect(() => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) {
-      return;
-    }
-    const distanceToBottom = window.innerHeight - rect.top;
-    setPaddingBottom(distanceToBottom + 8);
-  }, [inputValue]);
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div
+      style={{
+        background: '#F7F8FA',
+      }}
+    >
       <NavBar
         back={null}
         right={
@@ -49,7 +81,7 @@ export const App: React.FC<Props> = (props) => {
           </div>
         }
       >
-        Memo Chat
+        Memotalk
       </NavBar>
       <ActionSheet
         visible={!!clickMessage}
@@ -67,10 +99,14 @@ export const App: React.FC<Props> = (props) => {
         ]}
         onClose={() => setClickMessage(null)}
       />
-      <div style={{ color: 'red', textAlign: 'center' }}>
+      <div style={{ color: 'red', textAlign: 'center', height: 20 }}>
         此项目还在开发中，请不要使用
       </div>
-      <div style={{ flex: 1, overflow: 'hidden' }}>
+      <div
+        style={{
+          height: contentHeight,
+        }}
+      >
         <MemoTalkContainer
           memoTalks={memoTalks}
           onClick={(id) => {
@@ -78,16 +114,17 @@ export const App: React.FC<Props> = (props) => {
           }}
         />
       </div>
-      <div style={{ height: paddingBottom, width: '100%' }}></div>
-      <div ref={ref} className={styles.footer}>
+      <div style={{ height: footerHeight, width: '100%' }}></div>
+      <div ref={footerRef} className={styles.footer}>
         <div
           style={{
             borderRadius: 8,
-            padding: 8,
             boxSizing: 'border-box',
             width: '100%',
             display: 'flex',
-            background: 'rgb(244,244,244)',
+            background: 'white',
+            flexDirection: 'column',
+            padding: 8,
           }}
         >
           <TextArea
@@ -100,24 +137,24 @@ export const App: React.FC<Props> = (props) => {
             }}
           ></TextArea>
           <div
-            style={{ flexShrink: 0, position: 'relative', background: 'white' }}
+            style={{
+              flexShrink: 0,
+              position: 'relative',
+              background: 'white',
+              marginTop: 8,
+            }}
           >
             <Button
               disabled={!inputValue.trim()}
               color="primary"
               size="small"
               onClick={() => {
-                props.memoTalkCore.createMemoTalk(inputValue);
+                const ud = props.memoTalkCore.createMemoTalk(inputValue);
                 setMemoTalks(props.memoTalkCore.getMemoTalkList());
                 setInputValue('');
-              }}
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                width: 100,
-                background: 'black',
-                color: 'white',
+                setTimeout(() => {
+                  document.getElementById(ud)?.scrollIntoView();
+                }, 10);
               }}
             >
               <span>发送</span>

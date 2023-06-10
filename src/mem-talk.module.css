@@ -1,6 +1,7 @@
 .messages {
   height: 100%;
   overflow: scroll;
+  padding: 8px;
 }
 
 .messages ::-webkit-scrollbar {
@@ -10,13 +11,23 @@
 .message {
   background-color: #1f7efc;
   border-radius: 8px;
-  margin-bottom: 8px;
   padding: 8px;
-  max-width: 70%;
+  width: 100%;
+  box-sizing: border-box;
   word-wrap: break-word;
-  align-self: flex-end;
-  border-bottom-right-radius: 0px;
   color: rgb(64, 64, 64);
-  background: rgb(244, 244, 244);
   white-space: pre-wrap;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  margin-bottom: 8px;
+}
+
+.icon-left {
+  transform: translateX(-6px);
+}
+
+.time {
+  color: #999999;
+  line-height: 14px;
+  font-size: 12px;
 }

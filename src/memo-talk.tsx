@@ -1,6 +1,7 @@
+import MoreOne from '@icon-park/react/es/icons/MoreOne';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
 import styles from './mem-talk.module.css';
-import dayjs from 'dayjs';
 
 interface MemoTalk {
   id: string;
@@ -43,28 +44,36 @@ const MemoTalkContainer: React.FC<Props> = ({ memoTalks, onClick }) => {
     <div ref={container} className={styles.messages}>
       {memoTalks.map((memoTalk) => (
         <div
+          id={memoTalk.id}
           key={memoTalk.id}
           style={{
             display: 'flex',
             flexDirection: 'column',
           }}
         >
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 8,
-              color: 'rgb(128,128,128)',
-            }}
-          >
-            {dayjs(memoTalk.createTime).format('MM-DD hh:mm')}
-          </div>
-          <div
-            className={styles.message}
-            onClick={() => {
-              onClick(memoTalk.id);
-            }}
-          >
+          <div className={styles.message}>
             {memoTalk.content}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                paddingTop: 8,
+              }}
+            >
+              <MoreOne
+                className={styles['icon-left']}
+                style={{
+                  transform: 'transformX(-4px)',
+                }}
+                size={18}
+                onClick={() => {
+                  onClick(memoTalk.id);
+                }}
+              />
+              <div className={styles.time}>
+                {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+              </div>
+            </div>
           </div>
         </div>
       ))}

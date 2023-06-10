@@ -11,6 +11,7 @@ import {
 import { App } from './application.tsx';
 import { FileAPISDK } from './sdk.ts';
 import { decryptData, encryptData, generateKeys, sha256 } from './utils.ts';
+import '../../global.css';
 
 async function start() {
   const memoTalkCore = new MemoTalkCore();
@@ -42,8 +43,6 @@ async function start() {
     const currentHash = sha256(memoTalkCore.encode());
 
     const mergedFiles: string[] = [];
-
-    console.log(currentHash, files);
 
     // 把服务器上的文件和本地合并，合并后加入等待删除列表
     for (const file of files.filter((o) => currentHash !== o)) {

@@ -1,3 +1,29 @@
 body {
+  position: fixed;
+  top: 0;
+  width: 100%;
   padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  min-height: fill-available;
+  min-height: -webkit-fill-available;
+  display: flex;
+}
+
+#root {
+  flex: 1;
+  background: rgb(247, 248, 250);
+}
+
+html {
+  height: fill-available;
+  height: -webkit-fill-available;
+}
+
+body > .skiptranslate {
+  display: none;
+}
+
+:root:root {
+  --adm-color-primary: #30cccc;
 }
