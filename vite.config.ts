@@ -20,6 +20,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
+        name: 'Memotalk',
+        short_name: 'Memotalk',
         icons: [
           {
             src: 'pwa-64x64.png',
