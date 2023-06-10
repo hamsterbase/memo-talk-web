@@ -1,6 +1,6 @@
 import { Button, NavBar, SafeArea, TextArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MemoTalk, MemoTalkCore } from '../../core/memo-talk-core.ts';
 import { MemoTalkContainer } from '../../memo-talk.tsx';
 import '../../global.css';
@@ -14,17 +14,28 @@ export const App: React.FC<Props> = (props) => {
   const [memoTalks, setMemoTalks] = useState<MemoTalk[]>([]);
   const [inputValue, setInputValue] = useState('');
 
+  const [paddingBottom, setPaddingBottom] = useState(0);
+
+  const ref = useRef<HTMLDivElement | null>(null);
   const handleGoSetting = () => {
     window.location.href = '/settings/index.html';
   };
 
   useEffect(() => {
     setMemoTalks(props.memoTalkCore.getMemoTalkList());
-
     props.memoTalkCore.onUpdate(() => {
       setMemoTalks(props.memoTalkCore.getMemoTalkList());
     });
   }, [props.memoTalkCore]);
+
+  useEffect(() => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) {
+      return;
+    }
+    const distanceToBottom = window.innerHeight - rect.top;
+    setPaddingBottom(distanceToBottom + 8);
+  }, [inputValue]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -42,19 +53,21 @@ export const App: React.FC<Props> = (props) => {
       <div style={{ flex: 1, overflow: 'hidden' }}>
         <MemoTalkContainer memoTalks={memoTalks} />
       </div>
-      <div className={styles.footer} id="footer">
+      <div style={{ height: paddingBottom, width: '100%' }}></div>
+      <div ref={ref} className={styles.footer}>
         <div
           style={{
-            border: '1px solid #333',
             borderRadius: 8,
             padding: 8,
             boxSizing: 'border-box',
             width: '100%',
             display: 'flex',
+            background: 'rgb(244,244,244)',
           }}
         >
           <TextArea
-            rows={1}
+            placeholder="随便说一点"
+            rows={2}
             autoSize
             value={inputValue}
             onChange={(v) => {
@@ -78,6 +91,8 @@ export const App: React.FC<Props> = (props) => {
                 bottom: 0,
                 right: 0,
                 width: 100,
+                background: 'black',
+                color: 'white',
               }}
             >
               <span>发送</span>

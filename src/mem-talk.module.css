@@ -3,13 +3,20 @@
   overflow: scroll;
 }
 
+.messages ::-webkit-scrollbar {
+  display: none;
+}
+
 .message {
   background-color: #1f7efc;
   border-radius: 8px;
-  color: white;
   margin-bottom: 8px;
   padding: 8px;
   max-width: 70%;
   word-wrap: break-word;
   align-self: flex-end;
+  border-bottom-right-radius: 0px;
+  color: rgb(64, 64, 64);
+  background: rgb(244, 244, 244);
+  white-space: pre-wrap;
 }
