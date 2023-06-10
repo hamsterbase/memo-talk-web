@@ -33,6 +33,7 @@
     "@types/crypto-js": "^4.1.1",
     "antd-mobile": "^5.30.0",
     "crypto-js": "^4.1.1",
-    "dayjs": "^1.11.8"
+    "dayjs": "^1.11.8",
+    "vite-plugin-pwa": "^0.16.3"
   }
 }
