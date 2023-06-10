@@ -1,5 +1,6 @@
+import DatabaseSync from '@icon-park/react/es/icons/DatabaseSync';
+import Plam from '@icon-park/react/es/icons/Palm';
 import { Button, Form, Input, List, NavBar, Popup, Space } from 'antd-mobile';
-import { UploadOutline } from 'antd-mobile-icons';
 import React, { useEffect, useState } from 'react';
 import {
   ISettingService,
@@ -7,8 +8,6 @@ import {
   StorageKeys,
   defaultSettingValue,
 } from '../../core/storage';
-import Plam from '@icon-park/react/es/icons/Palm';
-import DatabaseSync from '@icon-park/react/es/icons/DatabaseSync';
 
 const CloudSync: React.FC<{
   visible: boolean;

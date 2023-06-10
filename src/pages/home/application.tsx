@@ -106,7 +106,7 @@ export const App: React.FC<Props> = (props) => {
         }}
       >
         <MemoTalkContainer
-          dominantHand={props.settings.dominantHand}
+          dominantHand={props.settings.dominantHand as any}
           memoTalks={memoTalks}
           onClick={(id) => {
             setClickMessage(id);
