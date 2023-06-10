@@ -29,6 +29,7 @@
     "yjs": "^13.6.2"
   },
   "dependencies": {
+    "@icon-park/react": "^1.4.2",
     "@types/crypto-js": "^4.1.1",
     "antd-mobile": "^5.30.0",
     "crypto-js": "^4.1.1",
