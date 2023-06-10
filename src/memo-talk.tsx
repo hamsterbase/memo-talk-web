@@ -10,9 +10,11 @@ interface MemoTalk {
 
 interface Props {
   memoTalks: MemoTalk[];
+
+  onClick(id: string): void;
 }
 
-const MemoTalkContainer: React.FC<Props> = ({ memoTalks }) => {
+const MemoTalkContainer: React.FC<Props> = ({ memoTalks, onClick }) => {
   const container = useRef<HTMLDivElement | null>(null);
 
   const value = useRef(0);
@@ -54,9 +56,16 @@ const MemoTalkContainer: React.FC<Props> = ({ memoTalks }) => {
               color: 'rgb(128,128,128)',
             }}
           >
-            {dayjs(memoTalk.createTime).format('MM-DD mm:ss')}
+            {dayjs(memoTalk.createTime).format('MM-DD hh:mm')}
           </div>
-          <div className={styles.message}>{memoTalk.content}</div>
+          <div
+            className={styles.message}
+            onClick={() => {
+              onClick(memoTalk.id);
+            }}
+          >
+            {memoTalk.content}
+          </div>
         </div>
       ))}
     </div>

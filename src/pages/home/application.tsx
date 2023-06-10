@@ -1,4 +1,4 @@
-import { Button, NavBar, SafeArea, TextArea } from 'antd-mobile';
+import { ActionSheet, Button, NavBar, SafeArea, TextArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { MemoTalk, MemoTalkCore } from '../../core/memo-talk-core.ts';
@@ -20,6 +20,8 @@ export const App: React.FC<Props> = (props) => {
   const handleGoSetting = () => {
     window.location.href = '/settings/index.html';
   };
+
+  const [clickMessage, setClickMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setMemoTalks(props.memoTalkCore.getMemoTalkList());
@@ -49,11 +51,32 @@ export const App: React.FC<Props> = (props) => {
       >
         Memo Chat
       </NavBar>
+      <ActionSheet
+        visible={!!clickMessage}
+        actions={[
+          {
+            text: '删除',
+            key: 'delete',
+            danger: true,
+            bold: true,
+            onClick: () => {
+              props.memoTalkCore.deleteMemoTalkById(clickMessage!);
+              setClickMessage(null);
+            },
+          },
+        ]}
+        onClose={() => setClickMessage(null)}
+      />
       <div style={{ color: 'red', textAlign: 'center' }}>
         此项目还在开发中，请不要使用
       </div>
       <div style={{ flex: 1, overflow: 'hidden' }}>
-        <MemoTalkContainer memoTalks={memoTalks} />
+        <MemoTalkContainer
+          memoTalks={memoTalks}
+          onClick={(id) => {
+            setClickMessage(id);
+          }}
+        />
       </div>
       <div style={{ height: paddingBottom, width: '100%' }}></div>
       <div ref={ref} className={styles.footer}>
