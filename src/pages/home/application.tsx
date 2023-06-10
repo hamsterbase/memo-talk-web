@@ -49,7 +49,9 @@ export const App: React.FC<Props> = (props) => {
       >
         Memo Chat
       </NavBar>
-      <div style={{ color: 'red' }}>此项目还在开发中，请不要使用</div>
+      <div style={{ color: 'red', textAlign: 'center' }}>
+        此项目还在开发中，请不要使用
+      </div>
       <div style={{ flex: 1, overflow: 'hidden' }}>
         <MemoTalkContainer memoTalks={memoTalks} />
       </div>

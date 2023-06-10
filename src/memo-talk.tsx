@@ -47,7 +47,13 @@ const MemoTalkContainer: React.FC<Props> = ({ memoTalks }) => {
             flexDirection: 'column',
           }}
         >
-          <div style={{ textAlign: 'center', padding: 8 }}>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: 8,
+              color: 'rgb(128,128,128)',
+            }}
+          >
             {dayjs(memoTalk.createTime).format('MM-DD mm:ss')}
           </div>
           <div className={styles.message}>{memoTalk.content}</div>
