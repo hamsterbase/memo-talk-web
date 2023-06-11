@@ -1,7 +1,7 @@
 import {
   FooterComponent,
   useFooterComponent,
-} from '@/components/footer/wewewe.tsx';
+} from '@/components/footer/footer.tsx';
 import { useEventRender } from '@/hooks/use-event-render.ts';
 import { useFooterHeight } from '@/hooks/use-footer-height.ts';
 import { useInnerHight } from '@/hooks/use-inner-hight.ts';
@@ -16,7 +16,7 @@ import {
 } from '@/services/sync/cloud-sync-service.ts';
 import { ActionSheet, NavBar, ProgressCircle, SafeArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MemoTalkContainer } from '../../memo-talk.tsx';
 import styles from './application.module.css';
 import './main.tsx';

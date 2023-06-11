@@ -107,15 +107,9 @@ export class MemoTalkCore implements IMemoTalkCore {
     if (!this.getMemoTalkById(id)) {
       throw new Error('memoTalk not exist');
     }
-    const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
-    const index = memoTalksArray.toArray().indexOf(id);
-    if (index !== -1) {
-      const memoTalk = this.ydoc.getMap(id);
-      memoTalk.set('deleted', true);
-      memoTalksArray.delete(index);
-    } else {
-      throw new Error('memoTalk not exist');
-    }
+
+    const memoTalk = this.ydoc.getMap(id);
+    memoTalk.set('deleted', true);
   }
 
   updateMemoTalk(id: string, content: string): void {

@@ -27,11 +27,13 @@ export const useMemotalkActionSheet = (edit: (memo: MemoTalk) => void) => {
         key: 'delete',
         danger: true,
         onClick: () => {
+          console.time();
           try {
             memoTalkService.deleteMemoTalk(memoId);
           } catch (error) {
             console.log('error');
           }
+          console.timeEnd();
           setMemoId(null);
         },
       },
