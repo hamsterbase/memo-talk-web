@@ -22,7 +22,17 @@ const Link: React.FC<LinkProps> = (props) => {
 
 export const Markdown: React.FC<Props> = (props) => {
   return (
-    <ReactMarkdown className={styles.markdown} components={{ a: Link }}>
+    <ReactMarkdown
+      className={styles.markdown}
+      components={{
+        a: Link,
+        img: (props) => (
+          <a target="_blank" href={props.src}>
+            {props.src}
+          </a>
+        ),
+      }}
+    >
       {props.content}
     </ReactMarkdown>
   );

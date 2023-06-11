@@ -2,8 +2,9 @@ import { IMemoTalkService } from '@/services/note/node-service';
 import { useService } from './use-service';
 import { useEventRender } from './use-event-render';
 import { useMemo, useState } from 'react';
+import { MemoTalk } from '@/core/memo-talk-core';
 
-export const useMemotalkActionSheet = () => {
+export const useMemotalkActionSheet = (edit: (memo: MemoTalk) => void) => {
   const memoTalkService = useService(IMemoTalkService);
   useEventRender(memoTalkService.onStatusChange);
   const [memoId, setMemoId] = useState<string | null>(null);
@@ -11,17 +12,31 @@ export const useMemotalkActionSheet = () => {
     if (!memoId) return [];
     return [
       {
+        text: '编辑',
+        key: 'edit',
+        onClick: () => {
+          const meno = memoTalkService.getMemoTalk(memoId);
+          setMemoId(null);
+          if (meno) {
+            edit(meno);
+          }
+        },
+      },
+      {
         text: '删除',
         key: 'delete',
         danger: true,
-        bold: true,
         onClick: () => {
-          memoTalkService.deleteMemoTalk(memoId);
+          try {
+            memoTalkService.deleteMemoTalk(memoId);
+          } catch (error) {
+            console.log('error');
+          }
           setMemoId(null);
         },
       },
     ];
-  }, [memoTalkService, memoId]);
+  }, [memoTalkService, memoId, edit]);
 
   return {
     props: {

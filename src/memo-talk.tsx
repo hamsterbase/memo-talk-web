@@ -20,16 +20,19 @@ interface Props {
 }
 
 const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
+  const memoTalkService = useService(IMemoTalkService);
   const container = useRef<HTMLDivElement | null>(null);
   const cacheRef = useRef(
     new CellMeasurerCache({
       fixedWidth: true,
+      keyMapper: (index) => {
+        return memoTalkService.memoTalkList[index].id;
+      },
     })
   );
 
   const listRef = useRef<List | null>(null);
 
-  const memoTalkService = useService(IMemoTalkService);
   useEventRender(memoTalkService.onStatusChange);
 
   useEffect(() => {
@@ -44,11 +47,15 @@ const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
     }
 
     memoTalkService.onStatusChange((e) => {
+      cacheRef.current.clearAll();
       if (e.type === 'init') {
         listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
       }
       if (e.type === 'create') {
         listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
+      }
+      if (e.type === 'delete') {
+        listRef.current?.forceUpdate();
       }
     });
   }, [memoTalkService]);

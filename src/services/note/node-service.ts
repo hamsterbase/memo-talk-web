@@ -14,13 +14,25 @@ export type MemoTalStatus =
     }
   | {
       type: 'init';
+    }
+  | {
+      type: 'update';
+      id: string;
+    }
+  | {
+      type: 'refresh';
     };
 
 export interface IMemoTalkService {
   memoTalkList: MemoTalk[];
   init(): Promise<void>;
   createMemoTalk(content: string): void;
+  getMemoTalk(id: string): MemoTalk | null;
+
   deleteMemoTalk(memoTalkId: string): void;
+
+  updateMemoTalk(memoTalkId: string, content: string): void;
+
   onStatusChange: Event<MemoTalStatus>;
 }
 
@@ -52,8 +64,9 @@ export class MemoTalkService implements IMemoTalkService {
     });
     this.memoTalkCore.onUpdate(() => {
       this.settingService.set(DatabaseKey, this.memoTalkCore.encode());
+      this._memoTalkList = this.memoTalkCore.getMemoTalkList();
       this.refreshStatus({
-        type: 'init',
+        type: 'refresh',
       });
     });
   }
@@ -72,6 +85,18 @@ export class MemoTalkService implements IMemoTalkService {
       type: 'delete',
       id: memoTalkId,
     });
+  }
+
+  async updateMemoTalk(memoTalkId: string, content: string) {
+    this.memoTalkCore.updateMemoTalk(memoTalkId, content);
+    this.refreshStatus({
+      type: 'update',
+      id: memoTalkId,
+    });
+  }
+
+  getMemoTalk(memoTalkId: string) {
+    return this.memoTalkCore.getMemoTalkById(memoTalkId);
   }
 
   private refreshStatus(status: MemoTalStatus) {

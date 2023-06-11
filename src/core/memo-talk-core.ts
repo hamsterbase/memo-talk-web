@@ -16,6 +16,8 @@ export interface MemoTalk {
 export interface IMemoTalkCore {
   createMemoTalk(content: string): string;
 
+  updateMemoTalk(id: string, content: string): void;
+
   getMemoTalkById(id: string): MemoTalk | null;
 
   getMemoTalkList(): MemoTalk[];
@@ -111,6 +113,20 @@ export class MemoTalkCore implements IMemoTalkCore {
       const memoTalk = this.ydoc.getMap(id);
       memoTalk.set('deleted', true);
       memoTalksArray.delete(index);
+    } else {
+      throw new Error('memoTalk not exist');
+    }
+  }
+
+  updateMemoTalk(id: string, content: string): void {
+    if (!this.getMemoTalkById(id)) {
+      throw new Error('memoTalk not exist');
+    }
+    const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
+    const index = memoTalksArray.toArray().indexOf(id);
+    if (index !== -1) {
+      const memoTalk = this.ydoc.getMap(id);
+      memoTalk.set('content', content);
     } else {
       throw new Error('memoTalk not exist');
     }
