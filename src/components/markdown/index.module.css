@@ -71,7 +71,7 @@
 
   & pre {
     background: var(--adm-color-box);
-    text-wrap: wrap;
+    white-space: pre-wrap;
 
     & code {
       color: var(--adm-color-text);

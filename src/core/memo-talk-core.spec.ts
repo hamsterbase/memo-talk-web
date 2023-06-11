@@ -1,7 +1,7 @@
-import { MemoTalkCore, IMemoTalkCore } from "./memo-talk-core";
-import { describe, beforeEach, afterEach, test, expect } from "vitest";
+import { MemoTalkCore, IMemoTalkCore } from './memo-talk-core';
+import { describe, beforeEach, afterEach, test, expect } from 'vitest';
 
-describe("MemoTalkCore", () => {
+describe('MemoTalkCore', () => {
   let memoTalkCore: IMemoTalkCore;
 
   beforeEach(() => {
@@ -14,17 +14,17 @@ describe("MemoTalkCore", () => {
     });
   });
 
-  test("createMemoTalk should create a new MemoTalk with the given content", () => {
-    const content = "test content";
+  test('createMemoTalk should create a new MemoTalk with the given content', () => {
+    const content = 'test content';
     const memoTalkId = memoTalkCore.createMemoTalk(content);
 
     const memoTalk = memoTalkCore.getMemoTalkById(memoTalkId);
     expect(memoTalk?.content).toBe(content);
   });
 
-  test("getMemoTalkById should return the MemoTalk with the given id", () => {
-    const content1 = "test content 1";
-    const content2 = "test content 2";
+  test('getMemoTalkById should return the MemoTalk with the given id', () => {
+    const content1 = 'test content 1';
+    const content2 = 'test content 2';
     const memoTalkId1 = memoTalkCore.createMemoTalk(content1);
     const memoTalkId2 = memoTalkCore.createMemoTalk(content2);
 
@@ -35,9 +35,9 @@ describe("MemoTalkCore", () => {
     expect(memoTalk2?.content).toBe(content2);
   });
 
-  test("getMemoTalkList should return a list of all MemoTalks", () => {
-    const content1 = "test content 1";
-    const content2 = "test content 2";
+  test('getMemoTalkList should return a list of all MemoTalks', () => {
+    const content1 = 'test content 1';
+    const content2 = 'test content 2';
     memoTalkCore.createMemoTalk(content1);
     memoTalkCore.createMemoTalk(content2);
 
@@ -48,8 +48,8 @@ describe("MemoTalkCore", () => {
     expect(memoTalkList[1].content).toBe(content2);
   });
 
-  test("deleteMemoTalkById should delete the MemoTalk with the given id", () => {
-    const content = "test content";
+  test('deleteMemoTalkById should delete the MemoTalk with the given id', () => {
+    const content = 'test content';
     const memoTalkId = memoTalkCore.createMemoTalk(content);
 
     memoTalkCore.deleteMemoTalkById(memoTalkId);
@@ -58,9 +58,9 @@ describe("MemoTalkCore", () => {
     expect(memoTalk).toBeNull();
   });
 
-  test("merge should merge the serialized data into the MemoTalkCore", () => {
-    const content1 = "test content 1";
-    const content2 = "test content 2";
+  test('merge should merge the serialized data into the MemoTalkCore', () => {
+    const content1 = 'test content 1';
+    const content2 = 'test content 2';
     const memoTalkCore1 = new MemoTalkCore();
     memoTalkCore1.createMemoTalk(content1);
     const memoTalkCore2 = new MemoTalkCore();
@@ -78,18 +78,18 @@ describe("MemoTalkCore", () => {
     ]);
   });
 
-  test("should throw an error if the MemoTalk does not exist", () => {
-    const invalidId = "invalid-id";
+  test('should throw an error if the MemoTalk does not exist', () => {
+    const invalidId = 'invalid-id';
     expect(() => memoTalkCore.deleteMemoTalkById(invalidId)).toThrowError(
-      "memoTalk not exist"
+      'memoTalk not exist'
     );
   });
 
-  test("should throw an error if trying to delete the same MemoTalk twice", () => {
-    const id = memoTalkCore.createMemoTalk("note");
+  test('should throw an error if trying to delete the same MemoTalk twice', () => {
+    const id = memoTalkCore.createMemoTalk('note');
     memoTalkCore.deleteMemoTalkById(id);
     expect(() => memoTalkCore.deleteMemoTalkById(id)).toThrowError(
-      "memoTalk not exist"
+      'memoTalk not exist'
     );
   });
 });

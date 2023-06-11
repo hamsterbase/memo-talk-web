@@ -41,6 +41,17 @@ const enum YDocKey {
 }
 
 export class MemoTalkCore implements IMemoTalkCore {
+  static merge(current: string, target: string) {
+    const doc = new MemoTalkCore();
+    if (current) {
+      doc.merge(current);
+    }
+    if (target) {
+      doc.merge(target);
+    }
+    return doc.encode();
+  }
+
   private ydoc: Y.Doc;
 
   constructor() {
@@ -86,7 +97,8 @@ export class MemoTalkCore implements IMemoTalkCore {
     const memoTalksArray = this.ydoc.getArray<string>(YDocKey.memoTalks);
     return memoTalksArray
       .map((id) => this.getMemoTalkById(id))
-      .filter((o): o is MemoTalk => !!o);
+      .filter((o): o is MemoTalk => !!o)
+      .sort((a, b) => a.createTime - b.createTime);
   }
 
   deleteMemoTalkById(id: string): void {
