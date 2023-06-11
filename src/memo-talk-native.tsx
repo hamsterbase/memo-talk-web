@@ -74,7 +74,7 @@ const MemoTalkContainerNative: React.FC<Props> = ({
           }}
         >
           <div className={styles.message}>
-            <Markdown content={memoTalk.content}></Markdown>
+            <div style={{ whiteSpace: 'pre-wrap' }}>{memoTalk.content}</div>
             <div
               style={{
                 display: 'flex',
