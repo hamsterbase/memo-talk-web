@@ -1,11 +1,11 @@
 import MoreOne from '@icon-park/react/es/icons/MoreOne';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
+import { Markdown } from './components/markdown/markdown';
 import { useEventRender } from './hooks/use-event-render';
 import { useService } from './hooks/use-service';
 import styles from './mem-talk.module.css';
 import { IMemoTalkService } from './services/note/node-service';
-import ReactMarkdown from 'react-markdown';
 
 interface MemoTalk {
   id: string;
@@ -15,22 +15,9 @@ interface MemoTalk {
 
 interface Props {
   memoTalks: MemoTalk[];
-  dominantHand: 'left' | 'right';
+  dominantHand: string;
   onClick(id: string): void;
 }
-
-interface LinkProps {
-  href?: string;
-  children: any;
-}
-
-const Link: React.FC<LinkProps> = (props) => {
-  return (
-    <a href={props.href} target="_blank">
-      {props.children}
-    </a>
-  );
-};
 
 const MemoTalkContainer: React.FC<Props> = ({
   memoTalks,
@@ -99,9 +86,7 @@ const MemoTalkContainer: React.FC<Props> = ({
           }}
         >
           <div className={styles.message}>
-            <ReactMarkdown className={styles.markdown} components={{ a: Link }}>
-              {memoTalk.content}
-            </ReactMarkdown>
+            <Markdown content={memoTalk.content}></Markdown>
             <div
               style={{
                 display: 'flex',

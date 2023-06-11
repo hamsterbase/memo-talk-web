@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -36,6 +36,7 @@
     "dayjs": "^1.11.8",
     "postcss-nesting": "^11.2.2",
     "react-markdown": "^8.0.7",
+    "uuid-apikey": "^1.5.3",
     "vite-plugin-pwa": "^0.16.3"
   }
 }

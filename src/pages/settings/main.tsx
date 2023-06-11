@@ -1,15 +1,19 @@
+import { MemotalkContext } from '@/context.ts';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { initServices } from '../create-services.ts';
 import { App } from './application.tsx';
-import {
-  ISettingService,
-  IndexedDBSettingService,
-} from '../../core/storage.ts';
 
-const settingService: ISettingService = new IndexedDBSettingService();
+const instantiationService = initServices();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App settingService={settingService}></App>
+    <MemotalkContext.Provider
+      value={{
+        instantiationService,
+      }}
+    >
+      <App />
+    </MemotalkContext.Provider>
   </React.StrictMode>
 );

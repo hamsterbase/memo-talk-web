@@ -6,15 +6,13 @@ export const DatabaseKey = 'hamsterDatabase';
 
 export enum StorageKeys {
   'hamsterbaseURL' = 'hamsterbaseURL',
-  'hamsterUsername' = 'hamsterUsername',
-  'hamsterPassword' = 'hamsterPassword',
   'dominantHand' = 'dominantHand',
+  'syncToken' = 'syncToken',
 }
 
 export const defaultSettingValue = {
   [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com',
-  [StorageKeys.hamsterUsername]: '',
-  [StorageKeys.hamsterPassword]: '',
+  [StorageKeys.syncToken]: '',
   [StorageKeys.dominantHand]: 'right',
 };
 

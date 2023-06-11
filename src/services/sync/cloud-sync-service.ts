@@ -6,13 +6,13 @@ import {
   generateKeys,
   sha256,
 } from '@/pages/home/utils';
+import { createDecorator } from '@/vscf/platform/instantiation/common';
 import { Emitter, Event } from 'vscf/base/common/event.ts';
 import {
   ISettingService,
   StorageKeys,
   defaultSettingValue,
 } from '../../core/storage';
-import { createDecorator } from '@/vscf/platform/instantiation/common';
 
 export enum SyncStatus {
   Default = -1, // The default status.
@@ -67,19 +67,17 @@ export class CloudSyncService implements ICloudSyncService {
   private async syncTaskWithDelay() {
     const result = await this.doSync();
     if (result) {
-      // await sleep(60);
+      await sleep(60);
     }
     this._syncTask = null;
     return;
   }
 
   private async doSync(): Promise<boolean> {
-    console.log('sync');
     const config = await this.settingService.readConfig(defaultSettingValue);
     const url = config[StorageKeys.hamsterbaseURL];
-    const username = config[StorageKeys.hamsterUsername];
-    const password = config[StorageKeys.hamsterPassword];
-    if (!url || !username || !password) {
+    const syncToken = config[StorageKeys.syncToken];
+    if (!url || !syncToken) {
       return false;
     }
     this.updateStatus(SyncStatus.Start);
@@ -87,7 +85,7 @@ export class CloudSyncService implements ICloudSyncService {
     // 生成加密密钥
     // userToken 用来标记用户身份，也是服务器文件夹的名字
     // encryptionKey 是文件加密密码， encryptionKey 不会发送到服务
-    const { userToken, encryptionKey } = generateKeys(username, password);
+    const { userToken, encryptionKey } = generateKeys(syncToken, syncToken);
     const currentDatabaseHash = sha256(this.memoTalkCore.encode());
     this.updateStatus(SyncStatus.FetchFiles);
 

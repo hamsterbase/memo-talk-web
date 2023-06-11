@@ -3,6 +3,7 @@ import { useFooterHeight } from '@/hooks/use-footer-height.ts';
 import { useInnerHight } from '@/hooks/use-inner-hight.ts';
 import { useMemotalkActionSheet } from '@/hooks/use-memotalk-action-sheet.ts';
 import { useService } from '@/hooks/use-service.ts';
+import { useSettingService } from '@/hooks/use-setting-service.ts';
 import { IMemoTalkService } from '@/services/note/node-service.ts';
 import {
   ICloudSyncService,
@@ -59,49 +60,47 @@ export const App: React.FC = () => {
   const cloudSyncService = useService(ICloudSyncService);
   useEventRender(cloudSyncService.onStatusChange);
 
+  const appSetting = useSettingService();
+
   const { innerHeight } = useInnerHight();
   const { footerHeight, footerRef } = useFooterHeight(innerHeight);
   const contentHeight = innerHeight - 45 - footerHeight;
 
-  const [dominantHand, setDominantHand] = useState('right');
-
   const handleClick = useRapidClick(() => {
-    setDominantHand(dominantHand === 'right' ? 'left' : 'right');
+    appSetting.update(
+      appSetting.StorageKeys.dominantHand,
+      appSetting.setting.dominantHand === 'right' ? 'left' : 'right'
+    );
   });
 
   const handleGoSetting = () => {
     window.location.href = '/settings/index.html';
   };
 
+  if (!appSetting.init) {
+    return null;
+  }
+
   return (
     <div>
-      <NavBar
-        back={null}
-        right={
-          <div style={{ fontSize: 24 }}>
-            <MoreOutline onClick={handleGoSetting} />
-          </div>
-        }
-      >
-        <span>
-          <span
-            style={{ position: 'relative' }}
-            onClick={() => cloudSyncService.sync()}
-          >
-            {cloudSyncService.status !== SyncStatus.Default && (
-              <ProgressCircle
-                style={{
-                  '--size': '16px',
-                  position: 'absolute',
-                  top: 2,
-                  left: 0,
-                  transform: 'translate(-20px)',
-                }}
-                percent={getProcessStatus(cloudSyncService.status)}
-              />
-            )}
-            Memotalk
-          </span>
+      <NavBar back={null} right={<MoreOutline onClick={handleGoSetting} />}>
+        <span
+          style={{ position: 'relative' }}
+          onClick={() => cloudSyncService.sync()}
+        >
+          {cloudSyncService.status !== SyncStatus.Default && (
+            <ProgressCircle
+              style={{
+                '--size': '16px',
+                position: 'absolute',
+                top: 2,
+                left: 0,
+                transform: 'translate(-20px)',
+              }}
+              percent={getProcessStatus(cloudSyncService.status)}
+            />
+          )}
+          Memotalk
         </span>
       </NavBar>
       <ActionSheet {...memotalkActionSheet.props} />
@@ -112,7 +111,7 @@ export const App: React.FC = () => {
         }}
       >
         <MemoTalkContainer
-          dominantHand={dominantHand}
+          dominantHand={appSetting.setting.dominantHand}
           memoTalks={memoTalkService.memoTalkList}
           onClick={memotalkActionSheet.selectMemo}
         />
@@ -150,7 +149,9 @@ export const App: React.FC = () => {
               marginTop: 8,
               display: 'flex',
               justifyContent:
-                dominantHand === 'right' ? 'flex-end' : 'flex-start',
+                appSetting.setting.dominantHand === 'right'
+                  ? 'flex-end'
+                  : 'flex-start',
             }}
             onClick={(e) => {
               console.log(e.target === e.currentTarget);

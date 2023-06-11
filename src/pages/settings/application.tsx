@@ -1,102 +1,20 @@
-import { Button, Form, Input, List, NavBar, Popup, Space } from 'antd-mobile';
-import React, { useEffect, useState } from 'react';
-import {
-  ISettingService,
-  SettingType,
-  StorageKeys,
-  defaultSettingValue,
-} from '../../core/storage';
+import { License } from '@/components/license';
+import { useSettingService } from '@/hooks/use-setting-service';
 import { DatabaseSync } from '@icon-park/react';
+import { Dialog, List, NavBar, Space, Switch, Toast } from 'antd-mobile';
+import { nanoid } from 'nanoid';
+import React from 'react';
+import uuidApiKey from 'uuid-apikey';
+import { StorageKeys } from '../../core/storage';
 
-const CloudSync: React.FC<{
-  visible: boolean;
-  setVisible: (value: boolean) => void;
-  setting: SettingType;
-  onSave: (url: {
-    url: string;
-    name: string;
-    password: string;
-  }) => Promise<void>;
-}> = (props) => {
-  const [form] = Form.useForm();
-  const onSubmit = async () => {
-    const values = form.getFieldsValue();
-    await props.onSave(values);
-    props.setVisible(false);
-  };
-  return (
-    <Popup
-      visible={props.visible}
-      onMaskClick={() => {
-        props.setVisible(false);
-      }}
-      bodyStyle={{
-        borderTopLeftRadius: '8px',
-        borderTopRightRadius: '8px',
-        minHeight: '40vh',
-      }}
-    >
-      <Form
-        form={form}
-        initialValues={{
-          url: props.setting.hamsterbaseURL,
-          name: props.setting.hamsterUsername,
-          password: props.setting.hamsterPassword,
-        }}
-        mode="card"
-        footer={
-          <Button block color="primary" onClick={onSubmit} size="large">
-            保存
-          </Button>
-        }
-      >
-        <Form.Item
-          name="url"
-          label="服务器地址"
-          rules={[{ required: true, message: '服务器地址' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="name"
-          label="账户"
-          rules={[{ required: true, message: '账户' }]}
-        >
-          <Input placeholder="请输入账户" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="密码"
-          rules={[{ required: true, message: '密码' }]}
-        >
-          <Input placeholder="请输入密码" />
-        </Form.Item>
-      </Form>
-    </Popup>
-  );
-};
+export const App: React.FC = () => {
+  const appSetting = useSettingService();
 
-export const App: React.FC<{
-  settingService: ISettingService;
-}> = (props) => {
-  const [visible, setVisible] = useState(false);
-  const [setting, setSettings] = useState<SettingType | null>(null);
-
-  useEffect(() => {
-    props.settingService.readConfig(defaultSettingValue).then((res) => {
-      setSettings(res);
-    });
-  }, [props.settingService]);
-
-  const isEnable =
-    setting &&
-    setting[StorageKeys.hamsterbaseURL] &&
-    setting[StorageKeys.hamsterUsername] &&
-    setting[StorageKeys.hamsterPassword];
-
-  if (!setting) {
+  if (!appSetting.init) {
     return null;
   }
+
+  const cloudSyncEnable = !!appSetting.setting.syncToken;
 
   return (
     <div>
@@ -111,60 +29,94 @@ export const App: React.FC<{
       <List mode="card">
         <List.Item
           prefix={<DatabaseSync />}
-          extra={setting.dominantHand === 'right' ? '右手' : '左手'}
+          extra={appSetting.setting.dominantHand === 'right' ? '右手' : '左手'}
           clickable
           onClick={async () => {
-            const newSetting: SettingType = {
-              ...setting,
-              [StorageKeys.dominantHand]:
-                setting.dominantHand === 'right' ? 'left' : 'right',
-            };
-            await props.settingService.set(
+            appSetting.update(
               StorageKeys.dominantHand,
-              setting.dominantHand === 'right' ? 'left' : 'right'
+              appSetting.setting.dominantHand === 'right' ? 'left' : 'right'
             );
-            setSettings(newSetting);
           }}
         >
           惯用手
         </List.Item>
-      </List>
-      <List mode="card">
         <List.Item
           prefix={<DatabaseSync />}
-          extra={isEnable ? '已开启' : '未开启'}
-          clickable
-          onClick={() => setVisible(true)}
+          extra={
+            <Switch
+              checked={!!appSetting.setting.syncToken}
+              onChange={async (checked) => {
+                if (checked) {
+                  const randomId = nanoid();
+                  const handler = Dialog.show({
+                    closeOnMaskClick: true,
+                    title: '用户协议',
+                    content: <License randomId={randomId}></License>,
+                    actions: [
+                      [
+                        {
+                          key: 'cancel',
+                          text: '取消',
+                          onClick: async () => {
+                            handler.close();
+                          },
+                        },
+                        {
+                          key: 'open',
+                          text: '确认开启',
+                          bold: true,
+                          onClick: async () => {
+                            const currentToken = (
+                              document.getElementById(
+                                randomId
+                              ) as HTMLInputElement
+                            ).value;
+
+                            if (!uuidApiKey.isAPIKey(currentToken)) {
+                              Toast.show({
+                                content: '密码格式不正确。',
+                              });
+                            } else {
+                              handler.close();
+                              await appSetting.update(
+                                StorageKeys.syncToken,
+                                currentToken
+                              );
+                            }
+                          },
+                        },
+                      ],
+                    ],
+                  });
+                } else {
+                  await appSetting.update(StorageKeys.syncToken, '');
+                }
+              }}
+            />
+          }
+          description={
+            cloudSyncEnable ? (
+              <p style={{ display: 'inline-block', margin: 0 }}>
+                云同步已开启{' '}
+                <a
+                  onClick={() => {
+                    Dialog.alert({
+                      content: appSetting.setting.syncToken,
+                    });
+                  }}
+                >
+                  查看同步密码
+                </a>
+              </p>
+            ) : (
+              '云同步未开启'
+            )
+          }
         >
           云同步
         </List.Item>
+        <List.Item></List.Item>
       </List>
-      <CloudSync
-        setting={setting}
-        visible={visible}
-        setVisible={setVisible}
-        onSave={async (value) => {
-          const newSetting: SettingType = {
-            ...setting,
-            [StorageKeys.hamsterbaseURL]: value.url,
-            [StorageKeys.hamsterPassword]: value.password,
-            [StorageKeys.hamsterUsername]: value.name,
-          };
-          setSettings(newSetting);
-          await props.settingService.set(
-            StorageKeys.hamsterbaseURL,
-            newSetting['hamsterbaseURL']
-          );
-          await props.settingService.set(
-            StorageKeys.hamsterUsername,
-            value.name
-          );
-          await props.settingService.set(
-            StorageKeys.hamsterPassword,
-            value.password
-          );
-        }}
-      />
     </div>
   );
 };
