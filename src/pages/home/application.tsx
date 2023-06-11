@@ -16,7 +16,7 @@ import {
 } from '@/services/sync/cloud-sync-service.ts';
 import { ActionSheet, NavBar, ProgressCircle, SafeArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
-import React from 'react';
+import React, { useCallback } from 'react';
 import styles from './application.module.css';
 import './main.tsx';
 
@@ -24,7 +24,16 @@ export const App: React.FC = () => {
   const memoTalkService = useService(IMemoTalkService);
   useEventRender(memoTalkService.onStatusChange);
 
-  const footerComponentValue = useFooterComponent();
+  const appSetting = useSettingService();
+
+  const toggleDominantHand = useCallback(() => {
+    appSetting.update(
+      appSetting.StorageKeys.dominantHand,
+      appSetting.setting.dominantHand === 'right' ? 'left' : 'right'
+    );
+  }, [appSetting]);
+
+  const footerComponentValue = useFooterComponent(toggleDominantHand);
 
   const memotalkActionSheet = useMemotalkActionSheet((memo) => {
     footerComponentValue?.edit(memo);
@@ -32,8 +41,6 @@ export const App: React.FC = () => {
 
   const cloudSyncService = useService(ICloudSyncService);
   useEventRender(cloudSyncService.onStatusChange);
-
-  const appSetting = useSettingService();
 
   const { footerHeight, footerRef, innerHeight } = useFooterHeight();
   const contentHeight = innerHeight - 45 - footerHeight;

@@ -28,7 +28,7 @@ interface FooterComponentProps {
   handleClickEmptyArea: () => void;
 }
 
-export const useFooterComponent = () => {
+export const useFooterComponent = (toggleDominantHand: () => void) => {
   const [mode, setMode] = useState<Mode>({ type: 'create', value: '' });
   const memoTalkService = useService(IMemoTalkService);
 
@@ -37,10 +37,7 @@ export const useFooterComponent = () => {
   const appSetting = useSettingService();
 
   const handleClickEmptyArea = useRapidClick(() => {
-    appSetting.update(
-      appSetting.StorageKeys.dominantHand,
-      appSetting.setting.dominantHand === 'right' ? 'left' : 'right'
-    );
+    toggleDominantHand();
   });
 
   if (!appSetting.init) {

@@ -5,14 +5,14 @@ export type SettingsValue = string | boolean;
 export const DatabaseKey = 'hamsterDatabase';
 
 export enum StorageKeys {
-  'hamsterbaseURL' = 'hamsterbaseURL',
+  'serverURL' = 'serverURL',
   'dominantHand' = 'dominantHand',
-  'syncToken' = 'syncToken',
+  'securityToken' = 'securityToken',
 }
 
 export const defaultSettingValue = {
-  [StorageKeys.hamsterbaseURL]: 'https://memo-talk.onrender.com',
-  [StorageKeys.syncToken]: '',
+  [StorageKeys.serverURL]: 'https://memo-talk.onrender.com',
+  [StorageKeys.securityToken]: '',
   [StorageKeys.dominantHand]: 'right',
 };
 
@@ -34,9 +34,9 @@ export interface ConfigDatabase {
 }
 
 export class IndexedDBSettingService implements ISettingService {
-  private readonly dbName: string = 'my-settings-db';
-  private readonly dbVersion: number = 1;
-  private readonly storeName: string = 'settings';
+  private readonly dbName: string = 'memotalk';
+  private readonly dbVersion: number = 99;
+  private readonly storeName: string = 'storage';
 
   private async openDB(): Promise<IDBDatabase> {
     return new Promise<IDBDatabase>((resolve, reject) => {

@@ -75,9 +75,9 @@ export class CloudSyncService implements ICloudSyncService {
 
   private async doSync(): Promise<boolean> {
     const config = await this.settingService.readConfig(defaultSettingValue);
-    const url = config[StorageKeys.hamsterbaseURL];
-    const syncToken = config[StorageKeys.syncToken];
-    if (!url || !syncToken) {
+    const url = config[StorageKeys.serverURL];
+    const securityToken = config[StorageKeys.securityToken];
+    if (!url || !securityToken) {
       return false;
     }
     this.updateStatus(SyncStatus.Start);
@@ -85,7 +85,10 @@ export class CloudSyncService implements ICloudSyncService {
     // 生成加密密钥
     // userToken 用来标记用户身份，也是服务器文件夹的名字
     // encryptionKey 是文件加密密码， encryptionKey 不会发送到服务
-    const { userToken, encryptionKey } = generateKeys(syncToken, syncToken);
+    const { userToken, encryptionKey } = generateKeys(
+      securityToken,
+      securityToken
+    );
     const currentDatabaseHash = sha256(this.memoTalkCore.encode());
     this.updateStatus(SyncStatus.FetchFiles);
 

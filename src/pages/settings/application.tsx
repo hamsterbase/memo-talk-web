@@ -63,7 +63,7 @@ export const App: React.FC = () => {
     return null;
   }
 
-  const cloudSyncEnable = !!appSetting.setting.syncToken;
+  const cloudSyncEnable = !!appSetting.setting.securityToken;
 
   return (
     <div>
@@ -176,7 +176,7 @@ export const App: React.FC = () => {
           prefix={<DatabaseSync />}
           extra={
             <Switch
-              checked={!!appSetting.setting.syncToken}
+              checked={!!appSetting.setting.securityToken}
               onChange={async (checked) => {
                 if (checked) {
                   const randomId = nanoid();
@@ -211,7 +211,7 @@ export const App: React.FC = () => {
                             } else {
                               handler.close();
                               await appSetting.update(
-                                StorageKeys.syncToken,
+                                StorageKeys.securityToken,
                                 currentToken
                               );
                             }
@@ -221,7 +221,7 @@ export const App: React.FC = () => {
                     ],
                   });
                 } else {
-                  await appSetting.update(StorageKeys.syncToken, '');
+                  await appSetting.update(StorageKeys.securityToken, '');
                 }
               }}
             />
@@ -233,7 +233,7 @@ export const App: React.FC = () => {
                 <a
                   onClick={() => {
                     Dialog.alert({
-                      content: appSetting.setting.syncToken,
+                      content: appSetting.setting.securityToken,
                     });
                   }}
                 >
