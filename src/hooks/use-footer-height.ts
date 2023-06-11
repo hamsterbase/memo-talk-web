@@ -1,29 +1,29 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
-export const useFooterHeight = (innerHeight: number) => {
+export const useFooterHeight = () => {
   const [footerHeight, setFooterHeight] = useState(0);
+
+  const [innerHeight, setInnerHeight] = useState(0);
   const footerRef = useRef<HTMLDivElement | null>(null);
-  const [count, setCount] = useState(0);
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     const timer = setInterval(() => {
-      setCount((count) => count + 1);
+      if (!footerRef.current) {
+        return;
+      }
+      const footerElement = footerRef.current;
+      const rect = footerElement.getBoundingClientRect();
+      setFooterHeight(window.innerHeight - rect.top);
+      setInnerHeight(window.innerHeight);
     }, 100);
     return () => {
       clearInterval(timer);
     };
   }, []);
 
-  useLayoutEffect(() => {
-    if (!footerRef.current) {
-      return;
-    }
-    const footerElement = footerRef.current;
-    const rect = footerElement.getBoundingClientRect();
-    setFooterHeight(innerHeight - rect.top);
-  }, [innerHeight, count]);
-
   return {
     footerRef,
     footerHeight,
+    innerHeight,
   };
 };

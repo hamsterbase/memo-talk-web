@@ -34,6 +34,11 @@ const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
   const listRef = useRef<List | null>(null);
 
   useEventRender(memoTalkService.onStatusChange);
+  const value = useRef<{
+    clientHeight: number;
+    scrollTop: number;
+    scrollHeight: number;
+  } | null>(null);
 
   useEffect(() => {
     if (memoTalkService.memoTalkList.length > 0) {
@@ -47,24 +52,21 @@ const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
     }
 
     memoTalkService.onStatusChange((e) => {
-      cacheRef.current.clearAll();
-      if (e.type === 'init') {
-        listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
-      }
       if (e.type === 'create') {
-        listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
+        setTimeout(() => {
+          listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
+        }, 100);
+        return;
       }
-      if (e.type === 'delete') {
-        listRef.current?.forceUpdate();
+
+      if (e.type === 'update') {
+        const index = memoTalkService.memoTalkList.findIndex((o) => o.id);
+        if (index !== -1) {
+          cacheRef.current.clear(index, 0);
+        }
       }
     });
   }, [memoTalkService]);
-
-  const value = useRef<{
-    clientHeight: number;
-    scrollTop: number;
-    scrollHeight: number;
-  } | null>(null);
 
   useEffect(() => {
     if (!container.current) {

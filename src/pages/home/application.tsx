@@ -4,10 +4,10 @@ import {
 } from '@/components/footer/footer.tsx';
 import { useEventRender } from '@/hooks/use-event-render.ts';
 import { useFooterHeight } from '@/hooks/use-footer-height.ts';
-import { useInnerHight } from '@/hooks/use-inner-hight.ts';
 import { useMemotalkActionSheet } from '@/hooks/use-memotalk-action-sheet.ts';
 import { useService } from '@/hooks/use-service.ts';
 import { useSettingService } from '@/hooks/use-setting-service.ts';
+import { MemoTalkContainerNative } from '@/memo-talk-native.tsx';
 import { IMemoTalkService } from '@/services/note/node-service.ts';
 import {
   ICloudSyncService,
@@ -17,7 +17,6 @@ import {
 import { ActionSheet, NavBar, ProgressCircle, SafeArea } from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
 import React from 'react';
-import { MemoTalkContainer } from '../../memo-talk.tsx';
 import styles from './application.module.css';
 import './main.tsx';
 
@@ -36,8 +35,7 @@ export const App: React.FC = () => {
 
   const appSetting = useSettingService();
 
-  const { innerHeight } = useInnerHight();
-  const { footerHeight, footerRef } = useFooterHeight(innerHeight);
+  const { footerHeight, footerRef, innerHeight } = useFooterHeight();
   const contentHeight = innerHeight - 45 - footerHeight;
 
   const handleGoSetting = () => {
@@ -82,12 +80,11 @@ export const App: React.FC = () => {
           height: contentHeight,
         }}
       >
-        <MemoTalkContainer
+        <MemoTalkContainerNative
           dominantHand={appSetting.setting.dominantHand}
           onClick={memotalkActionSheet.selectMemo}
         />
       </div>
-      <div style={{ height: footerHeight, width: '100%' }}></div>
       <div ref={footerRef} className={styles.footer}>
         {footerComponentValue && (
           <FooterComponent {...footerComponentValue?.props}></FooterComponent>
