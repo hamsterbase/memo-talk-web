@@ -53,6 +53,32 @@ const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
     });
   }, [memoTalkService]);
 
+  const value = useRef<{
+    clientHeight: number;
+    scrollTop: number;
+    scrollHeight: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!container.current) {
+      return;
+    }
+    const containerElement = container.current;
+    new ResizeObserver(() => {
+      if (value.current) {
+        const previousScroll =
+          value.current.scrollHeight -
+          value.current.clientHeight -
+          value.current.scrollTop;
+        listRef.current?.scrollToPosition(
+          value.current.scrollHeight -
+            previousScroll -
+            containerElement.clientHeight
+        );
+      }
+    }).observe(containerElement);
+  }, []);
+
   const rowRenderer = ({
     index,
     key,
@@ -127,6 +153,17 @@ const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
       <AutoSizer>
         {({ width, height }) => (
           <List
+            onScroll={(v) => {
+              const containerElement = container.current;
+              if (!containerElement) {
+                return;
+              }
+              value.current = {
+                clientHeight: containerElement.clientHeight,
+                scrollTop: v.scrollTop,
+                scrollHeight: containerElement.scrollHeight,
+              };
+            }}
             ref={(ref) => {
               listRef.current = ref;
             }}
