@@ -1,7 +1,10 @@
 import MoreOne from '@icon-park/react/es/icons/MoreOne';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef } from 'react';
+import { useEventRender } from './hooks/use-event-render';
+import { useService } from './hooks/use-service';
 import styles from './mem-talk.module.css';
+import { IMemoTalkService } from './services/note/node-service';
 
 interface MemoTalk {
   id: string;
@@ -23,6 +26,32 @@ const MemoTalkContainer: React.FC<Props> = ({
   const container = useRef<HTMLDivElement | null>(null);
 
   const value = useRef(0);
+
+  const memoTalkService = useService(IMemoTalkService);
+  useEventRender(memoTalkService.onStatusChange);
+
+  useEffect(() => {
+    memoTalkService.onStatusChange((s) => {
+      if (s.type === 'create') {
+        console.log('create');
+        setTimeout(() => {
+          document.getElementById(s.id)?.scrollIntoView();
+        }, 20);
+      }
+    });
+
+    memoTalkService.onStatusChange((s) => {
+      if (s.type === 'init') {
+        const last =
+          memoTalkService.memoTalkList[memoTalkService.memoTalkList.length - 1];
+        if (last) {
+          setTimeout(() => {
+            document.getElementById(last.id)?.scrollIntoView();
+          }, 10);
+        }
+      }
+    });
+  }, [memoTalkService]);
 
   useEffect(() => {
     if (!container.current) {

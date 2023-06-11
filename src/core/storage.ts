@@ -1,3 +1,5 @@
+import { createDecorator } from 'vscf/platform/instantiation/common';
+
 export type SettingsValue = string | boolean;
 
 export const DatabaseKey = 'hamsterDatabase';
@@ -137,3 +139,6 @@ export class IndexedDBSettingService implements ISettingService {
     return indexedDB;
   }
 }
+
+export const ISettingService =
+  createDecorator<ISettingService>('ISettingService');

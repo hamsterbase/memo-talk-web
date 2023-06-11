@@ -7,6 +7,13 @@ const __dirname = new URL('.', import.meta.url).pathname;
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+      vscf: resolve(__dirname, 'src/vscf'),
+      vs: resolve(__dirname, 'src/vscf/internal'),
+    },
+  },
   build: {
     rollupOptions: {
       input: {

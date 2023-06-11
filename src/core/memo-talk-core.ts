@@ -1,6 +1,7 @@
+import { createDecorator } from '@/vscf/platform/instantiation/common';
+import { fromUint8Array, toUint8Array } from 'js-base64';
 import { nanoid } from 'nanoid';
 import * as Y from 'yjs';
-import { fromUint8Array, toUint8Array } from 'js-base64';
 export interface MemoTalk {
   id: string;
   content: string;
@@ -115,3 +116,5 @@ export class MemoTalkCore implements IMemoTalkCore {
     this.ydoc.on('update', handler);
   }
 }
+
+export const IMemoTalkCore = createDecorator<IMemoTalkCore>('IMemoTalkCore');

@@ -24,8 +24,13 @@ export function generateKeys(
   return { userToken, encryptionKey };
 }
 
+const magicKey = 'hamsterbase-memotalk';
+
 export function encryptData(data: string, key: string): string {
-  const encrypted = CryptoJS.AES.encrypt(data, key).toString();
+  const encrypted = CryptoJS.AES.encrypt(
+    JSON.stringify({ data, magicKey }),
+    key
+  ).toString();
   return encrypted;
 }
 
@@ -33,7 +38,11 @@ export function decryptData(encryptedData: string, key: string): string {
   const decrypted = CryptoJS.AES.decrypt(encryptedData, key).toString(
     CryptoJS.enc.Utf8
   );
-  return decrypted;
+  const value = JSON.parse(decrypted);
+  if (value.magicKey !== magicKey) {
+    throw new Error('Invalid data');
+  }
+  return value.data;
 }
 
 export function sha256(input: string): string {

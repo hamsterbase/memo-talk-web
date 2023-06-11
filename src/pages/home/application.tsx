@@ -1,73 +1,77 @@
-import { ActionSheet, Button, NavBar, SafeArea, TextArea } from 'antd-mobile';
+import { useEventRender } from '@/hooks/use-event-render.ts';
+import { useFooterHeight } from '@/hooks/use-footer-height.ts';
+import { useInnerHight } from '@/hooks/use-inner-hight.ts';
+import { useMemotalkActionSheet } from '@/hooks/use-memotalk-action-sheet.ts';
+import { useService } from '@/hooks/use-service.ts';
+import { IMemoTalkService } from '@/services/note/node-service.ts';
+import {
+  ICloudSyncService,
+  SyncStatus,
+  getProcessStatus,
+} from '@/services/sync/cloud-sync-service.ts';
+import {
+  ActionSheet,
+  Button,
+  NavBar,
+  ProgressCircle,
+  SafeArea,
+  TextArea,
+} from 'antd-mobile';
 import { MoreOutline } from 'antd-mobile-icons';
-import React, { useEffect, useRef, useState } from 'react';
-import { MemoTalk, MemoTalkCore } from '../../core/memo-talk-core.ts';
-import { SettingType } from '../../core/storage.ts';
+import React, { useCallback, useEffect, useState } from 'react';
 import { MemoTalkContainer } from '../../memo-talk.tsx';
 import styles from './application.module.css';
 import './main.tsx';
 
-export interface Props {
-  memoTalkCore: MemoTalkCore;
-  settings: SettingType;
-}
+const useRapidClick = (handler: () => void) => {
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
 
-const useInnerHight = () => {
-  const [innerHeight, setHeight] = useState<number>(window.innerHeight);
-  useEffect(() => {
-    const onViewportResize = () => {
-      const viewportHeight = window.innerHeight;
-      setHeight(viewportHeight);
-    };
+  const handleClick = useCallback(() => {
+    const currentTime = Date.now();
+    const timeInterval = currentTime - lastClickTime;
 
-    window.addEventListener('resize', onViewportResize);
-    return () => window.removeEventListener('reset', onViewportResize);
-  });
-  return { innerHeight };
-};
-
-const useFooterHeight = (innerHeight: number) => {
-  const [footerHeight, setPaddingBottom] = useState(0);
-  const ref = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!ref.current) {
-      return;
+    if (timeInterval <= 500) {
+      setClickCount(clickCount + 1);
+    } else {
+      setClickCount(1);
     }
-    const footerElement = ref.current;
-    new ResizeObserver(() => {
-      const rect = footerElement.getBoundingClientRect();
-      setPaddingBottom(innerHeight - rect.top);
-    }).observe(footerElement);
-  }, [innerHeight]);
 
-  return {
-    footerRef: ref,
-    footerHeight,
-  };
+    setLastClickTime(currentTime);
+  }, [clickCount, lastClickTime]);
+
+  useEffect(() => {
+    if (clickCount === 3) {
+      handler();
+      setClickCount(0);
+    }
+  }, [clickCount, handler]);
+
+  return handleClick;
 };
 
-export const App: React.FC<Props> = (props) => {
-  const [memoTalks, setMemoTalks] = useState<MemoTalk[]>([]);
+export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
+  const memoTalkService = useService(IMemoTalkService);
+  useEventRender(memoTalkService.onStatusChange);
+  const memotalkActionSheet = useMemotalkActionSheet();
+
+  const cloudSyncService = useService(ICloudSyncService);
+  useEventRender(cloudSyncService.onStatusChange);
 
   const { innerHeight } = useInnerHight();
+  const { footerHeight, footerRef } = useFooterHeight(innerHeight);
+  const contentHeight = innerHeight - 45 - footerHeight;
+
+  const [dominantHand, setDominantHand] = useState('right');
+
+  const handleClick = useRapidClick(() => {
+    setDominantHand(dominantHand === 'right' ? 'left' : 'right');
+  });
 
   const handleGoSetting = () => {
     window.location.href = '/settings/index.html';
   };
-
-  const { footerHeight, footerRef } = useFooterHeight(innerHeight);
-
-  const [clickMessage, setClickMessage] = useState<string | null>(null);
-
-  const contentHeight = innerHeight - 45 - 20 - footerHeight;
-
-  useEffect(() => {
-    setMemoTalks(props.memoTalkCore.getMemoTalkList());
-    props.memoTalkCore.onUpdate(() => {
-      setMemoTalks(props.memoTalkCore.getMemoTalkList());
-    });
-  }, [props.memoTalkCore]);
 
   return (
     <div>
@@ -79,38 +83,38 @@ export const App: React.FC<Props> = (props) => {
           </div>
         }
       >
-        Memotalk
+        <span>
+          <span
+            style={{ position: 'relative' }}
+            onClick={() => cloudSyncService.sync()}
+          >
+            {cloudSyncService.status !== SyncStatus.Default && (
+              <ProgressCircle
+                style={{
+                  '--size': '16px',
+                  position: 'absolute',
+                  top: 2,
+                  left: 0,
+                  transform: 'translate(-20px)',
+                }}
+                percent={getProcessStatus(cloudSyncService.status)}
+              />
+            )}
+            Memotalk
+          </span>
+        </span>
       </NavBar>
-      <ActionSheet
-        visible={!!clickMessage}
-        actions={[
-          {
-            text: '删除',
-            key: 'delete',
-            danger: true,
-            bold: true,
-            onClick: () => {
-              props.memoTalkCore.deleteMemoTalkById(clickMessage!);
-              setClickMessage(null);
-            },
-          },
-        ]}
-        onClose={() => setClickMessage(null)}
-      />
-      <div style={{ color: 'red', textAlign: 'center', height: 20 }}>
-        此项目还在开发中，请不要使用
-      </div>
+      <ActionSheet {...memotalkActionSheet.props} />
+
       <div
         style={{
           height: contentHeight,
         }}
       >
         <MemoTalkContainer
-          dominantHand={props.settings.dominantHand as any}
-          memoTalks={memoTalks}
-          onClick={(id) => {
-            setClickMessage(id);
-          }}
+          dominantHand={dominantHand}
+          memoTalks={memoTalkService.memoTalkList}
+          onClick={memotalkActionSheet.selectMemo}
         />
       </div>
       <div style={{ height: footerHeight, width: '100%' }}></div>
@@ -134,7 +138,7 @@ export const App: React.FC<Props> = (props) => {
             onChange={(v) => {
               setInputValue(v);
             }}
-          ></TextArea>
+          />
           <div
             style={{
               flexShrink: 0,
@@ -143,9 +147,13 @@ export const App: React.FC<Props> = (props) => {
               marginTop: 8,
               display: 'flex',
               justifyContent:
-                props.settings.dominantHand === 'right'
-                  ? 'flex-end'
-                  : 'flex-start',
+                dominantHand === 'right' ? 'flex-end' : 'flex-start',
+            }}
+            onClick={(e) => {
+              console.log(e.target === e.currentTarget);
+              if (e.target === e.currentTarget) {
+                handleClick();
+              }
             }}
           >
             <Button
@@ -153,12 +161,9 @@ export const App: React.FC<Props> = (props) => {
               color="primary"
               size="small"
               onClick={() => {
-                const ud = props.memoTalkCore.createMemoTalk(inputValue);
-                setMemoTalks(props.memoTalkCore.getMemoTalkList());
+                memoTalkService.createMemoTalk(inputValue);
+                cloudSyncService.sync();
                 setInputValue('');
-                setTimeout(() => {
-                  document.getElementById(ud)?.scrollIntoView();
-                }, 10);
               }}
             >
               <span>发送</span>
@@ -170,3 +175,6 @@ export const App: React.FC<Props> = (props) => {
     </div>
   );
 };
+
+// 1. 用户需要点 5 下
+// 2. 间隔不能超过 500ms
