@@ -94,7 +94,10 @@ export const App: React.FC = () => {
       </div>
       <div ref={footerRef} className={styles.footer}>
         {footerComponentValue && (
-          <FooterComponent {...footerComponentValue?.props}></FooterComponent>
+          <FooterComponent
+            {...footerComponentValue?.props}
+            dominantHand={appSetting.setting.dominantHand}
+          ></FooterComponent>
         )}
         <SafeArea position="bottom"></SafeArea>
       </div>

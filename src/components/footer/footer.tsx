@@ -34,20 +34,13 @@ export const useFooterComponent = (toggleDominantHand: () => void) => {
 
   const cloudSyncService = useService(ICloudSyncService);
 
-  const appSetting = useSettingService();
-
   const handleClickEmptyArea = useRapidClick(() => {
     toggleDominantHand();
   });
 
-  if (!appSetting.init) {
-    return null;
-  }
-
-  const props: FooterComponentProps = {
+  const props: Omit<FooterComponentProps, 'dominantHand'> = {
     mode,
     value: mode.value,
-    dominantHand: appSetting.setting.dominantHand,
     onChange: (v) => setMode((m) => ({ ...m, value: v })),
     onSave: async () => {
       switch (mode.type) {
