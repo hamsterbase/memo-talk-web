@@ -55,24 +55,6 @@ const readFileAsString = (file: File) => {
   });
 };
 
-const useDownloadFile = (content: string) => {
-  const blob = new Blob([content]);
-  const size = blob.size;
-  const download = () => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${dayjs().format('YYYY-MM-DD HH:mm:ss')}.memoTalk`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  return {
-    size,
-    download,
-  };
-};
-
 export const App: React.FC = () => {
   const appSetting = useSettingService();
   const settingService = useService(ISettingService);

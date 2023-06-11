@@ -154,7 +154,6 @@ export const App: React.FC = () => {
                   : 'flex-start',
             }}
             onClick={(e) => {
-              console.log(e.target === e.currentTarget);
               if (e.target === e.currentTarget) {
                 handleClick();
               }

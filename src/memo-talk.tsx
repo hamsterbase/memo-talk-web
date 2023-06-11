@@ -8,39 +8,50 @@ import styles from './mem-talk.module.css';
 import { IMemoTalkService } from './services/note/node-service';
 
 import {
-  List,
   AutoSizer,
-  CellMeasurerCache,
   CellMeasurer,
+  CellMeasurerCache,
+  List,
 } from 'react-virtualized';
 
-interface MemoTalk {
-  id: string;
-  content: string;
-  createTime: number;
-}
-
 interface Props {
-  memoTalks: MemoTalk[];
   dominantHand: string;
   onClick(id: string): void;
 }
 
-const MemoTalkContainer: React.FC<Props> = ({
-  memoTalks,
-  onClick,
-  dominantHand,
-}) => {
+const MemoTalkContainer: React.FC<Props> = ({ onClick, dominantHand }) => {
   const container = useRef<HTMLDivElement | null>(null);
   const cacheRef = useRef(
     new CellMeasurerCache({
       fixedWidth: true,
-      keyMapper: (index) => memoTalks[index].id,
     })
   );
 
+  const listRef = useRef<List | null>(null);
+
   const memoTalkService = useService(IMemoTalkService);
   useEventRender(memoTalkService.onStatusChange);
+
+  useEffect(() => {
+    if (memoTalkService.memoTalkList.length > 0) {
+      const rea = memoTalkService.memoTalkList.length - 1;
+      setTimeout(() => {
+        listRef.current?.scrollToRow(rea);
+      });
+      setTimeout(() => {
+        listRef.current?.scrollToRow(rea);
+      }, 150);
+    }
+
+    memoTalkService.onStatusChange((e) => {
+      if (e.type === 'init') {
+        listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
+      }
+      if (e.type === 'create') {
+        listRef.current?.scrollToRow(memoTalkService.memoTalkList.length - 1);
+      }
+    });
+  }, [memoTalkService]);
 
   const rowRenderer = ({
     index,
@@ -53,7 +64,7 @@ const MemoTalkContainer: React.FC<Props> = ({
     key: string;
     parent: unknown;
   }) => {
-    const memoTalk = memoTalks[index];
+    const memoTalk = memoTalkService.memoTalkList[index];
     return (
       <CellMeasurer
         cache={cacheRef.current}
@@ -116,12 +127,15 @@ const MemoTalkContainer: React.FC<Props> = ({
       <AutoSizer>
         {({ width, height }) => (
           <List
+            ref={(ref) => {
+              listRef.current = ref;
+            }}
             width={width}
             height={height}
             deferredMeasurementCache={cache}
             rowHeight={cache.rowHeight}
             rowRenderer={rowRenderer}
-            rowCount={memoTalks.length}
+            rowCount={memoTalkService.memoTalkList.length}
             overscanRowCount={3}
           />
         )}
