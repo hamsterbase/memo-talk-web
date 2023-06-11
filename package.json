@@ -31,11 +31,13 @@
   "dependencies": {
     "@icon-park/react": "^1.4.2",
     "@types/crypto-js": "^4.1.1",
+    "@types/react-virtualized": "^9.21.22",
     "antd-mobile": "^5.30.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.8",
     "postcss-nesting": "^11.2.2",
     "react-markdown": "^8.0.7",
+    "react-virtualized": "^9.22.5",
     "uuid-apikey": "^1.5.3",
     "vite-plugin-pwa": "^0.16.3"
   }

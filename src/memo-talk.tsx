@@ -7,6 +7,13 @@ import { useService } from './hooks/use-service';
 import styles from './mem-talk.module.css';
 import { IMemoTalkService } from './services/note/node-service';
 
+import {
+  List,
+  AutoSizer,
+  CellMeasurerCache,
+  CellMeasurer,
+} from 'react-virtualized';
+
 interface MemoTalk {
   id: string;
   content: string;
@@ -25,99 +32,100 @@ const MemoTalkContainer: React.FC<Props> = ({
   dominantHand,
 }) => {
   const container = useRef<HTMLDivElement | null>(null);
-
-  const value = useRef(0);
+  const cacheRef = useRef(
+    new CellMeasurerCache({
+      fixedWidth: true,
+      keyMapper: (index) => memoTalks[index].id,
+    })
+  );
 
   const memoTalkService = useService(IMemoTalkService);
   useEventRender(memoTalkService.onStatusChange);
 
-  useEffect(() => {
-    memoTalkService.onStatusChange((s) => {
-      if (s.type === 'create') {
-        console.log('create');
-        setTimeout(() => {
-          document.getElementById(s.id)?.scrollIntoView();
-        }, 20);
-      }
-    });
-
-    memoTalkService.onStatusChange((s) => {
-      if (s.type === 'init') {
-        const last =
-          memoTalkService.memoTalkList[memoTalkService.memoTalkList.length - 1];
-        if (last) {
-          setTimeout(() => {
-            document.getElementById(last.id)?.scrollIntoView();
-          }, 10);
-        }
-      }
-    });
-  }, [memoTalkService]);
-
-  useEffect(() => {
-    if (!container.current) {
-      return;
-    }
-    const containerElement = container.current;
-    new ResizeObserver(() => {
-      containerElement.scrollTop =
-        containerElement.scrollHeight -
-        value.current -
-        containerElement.clientHeight;
-    }).observe(containerElement);
-
-    containerElement.onscroll = () => {
-      value.current =
-        containerElement.scrollHeight -
-        containerElement.clientHeight -
-        containerElement.scrollTop;
-    };
-  }, []);
-
-  return (
-    <div ref={container} className={styles.messages}>
-      {memoTalks.map((memoTalk) => (
-        <div
-          id={memoTalk.id}
-          key={memoTalk.id}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div className={styles.message}>
-            <Markdown content={memoTalk.content}></Markdown>
+  const rowRenderer = ({
+    index,
+    key,
+    parent,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+    key: string;
+    parent: unknown;
+  }) => {
+    const memoTalk = memoTalks[index];
+    return (
+      <CellMeasurer
+        cache={cacheRef.current}
+        columnIndex={0}
+        key={key}
+        rowIndex={index}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        parent={parent as any}
+      >
+        {({ registerChild }) => (
+          <div ref={registerChild as any} style={style} id={memoTalk.id}>
             <div
+              key={memoTalk.id}
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                paddingTop: 8,
+                flexDirection: 'column',
               }}
             >
-              {dominantHand === 'right' && (
-                <div className={styles.time}>
-                  {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+              <div className={styles.message}>
+                <Markdown content={memoTalk.content}></Markdown>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: 8,
+                  }}
+                >
+                  {dominantHand === 'right' && (
+                    <div className={styles.time}>
+                      {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                    </div>
+                  )}
+                  <MoreOne
+                    className={styles['icon-left']}
+                    style={{
+                      transform: 'transformX(-4px)',
+                    }}
+                    size={18}
+                    onClick={() => {
+                      onClick(memoTalk.id);
+                    }}
+                  />
+                  {dominantHand === 'left' && (
+                    <div className={styles.time}>
+                      {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                    </div>
+                  )}
                 </div>
-              )}
-              <MoreOne
-                className={styles['icon-left']}
-                style={{
-                  transform: 'transformX(-4px)',
-                }}
-                size={18}
-                onClick={() => {
-                  onClick(memoTalk.id);
-                }}
-              />
-              {dominantHand === 'left' && (
-                <div className={styles.time}>
-                  {dayjs(memoTalk.createTime).format('YYYY-MM-DD HH:mm:ss')}
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        )}
+      </CellMeasurer>
+    );
+  };
+
+  const cache = cacheRef.current;
+  return (
+    <div ref={container} className={styles.messages}>
+      <AutoSizer>
+        {({ width, height }) => (
+          <List
+            width={width}
+            height={height}
+            deferredMeasurementCache={cache}
+            rowHeight={cache.rowHeight}
+            rowRenderer={rowRenderer}
+            rowCount={memoTalks.length}
+            overscanRowCount={3}
+          />
+        )}
+      </AutoSizer>
     </div>
   );
 };
