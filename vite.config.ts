@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
+import postcssNesting from 'postcss-nesting';
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
@@ -12,6 +13,14 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       vscf: resolve(__dirname, 'src/vscf'),
       vs: resolve(__dirname, 'src/vscf/internal'),
+    },
+  },
+  css: {
+    modules: {
+      localsConvention: 'dashes',
+    },
+    postcss: {
+      plugins: [postcssNesting()],
     },
   },
   build: {

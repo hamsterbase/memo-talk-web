@@ -5,6 +5,7 @@ import { useEventRender } from './hooks/use-event-render';
 import { useService } from './hooks/use-service';
 import styles from './mem-talk.module.css';
 import { IMemoTalkService } from './services/note/node-service';
+import ReactMarkdown from 'react-markdown';
 
 interface MemoTalk {
   id: string;
@@ -17,6 +18,19 @@ interface Props {
   dominantHand: 'left' | 'right';
   onClick(id: string): void;
 }
+
+interface LinkProps {
+  href?: string;
+  children: any;
+}
+
+const Link: React.FC<LinkProps> = (props) => {
+  return (
+    <a href={props.href} target="_blank">
+      {props.children}
+    </a>
+  );
+};
 
 const MemoTalkContainer: React.FC<Props> = ({
   memoTalks,
@@ -85,7 +99,9 @@ const MemoTalkContainer: React.FC<Props> = ({
           }}
         >
           <div className={styles.message}>
-            {memoTalk.content}
+            <ReactMarkdown className={styles.markdown} components={{ a: Link }}>
+              {memoTalk.content}
+            </ReactMarkdown>
             <div
               style={{
                 display: 'flex',

@@ -1,5 +1,3 @@
-import DatabaseSync from '@icon-park/react/es/icons/DatabaseSync';
-import Plam from '@icon-park/react/es/icons/Palm';
 import { Button, Form, Input, List, NavBar, Popup, Space } from 'antd-mobile';
 import React, { useEffect, useState } from 'react';
 import {
@@ -8,6 +6,7 @@ import {
   StorageKeys,
   defaultSettingValue,
 } from '../../core/storage';
+import { DatabaseSync } from '@icon-park/react';
 
 const CloudSync: React.FC<{
   visible: boolean;
@@ -111,7 +110,7 @@ export const App: React.FC<{
       <Space />
       <List mode="card">
         <List.Item
-          prefix={<Plam />}
+          prefix={<DatabaseSync />}
           extra={setting.dominantHand === 'right' ? '右手' : '左手'}
           clickable
           onClick={async () => {

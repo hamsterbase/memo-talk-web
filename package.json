@@ -34,6 +34,8 @@
     "antd-mobile": "^5.30.0",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.8",
+    "postcss-nesting": "^11.2.2",
+    "react-markdown": "^8.0.7",
     "vite-plugin-pwa": "^0.16.3"
   }
 }

@@ -133,7 +133,10 @@ export const App: React.FC = () => {
           <TextArea
             placeholder="随便说一点"
             rows={2}
-            autoSize
+            autoSize={{
+              minRows: 2,
+              maxRows: 10,
+            }}
             value={inputValue}
             onChange={(v) => {
               setInputValue(v);
