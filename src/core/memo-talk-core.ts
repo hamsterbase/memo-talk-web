@@ -23,7 +23,6 @@ export interface IMemoTalkCore {
   getMemoTalkList(): MemoTalk[];
 
   deleteMemoTalkById(id: string): void;
-
   /**
    * 把整个数据库序列化为字符串
    */

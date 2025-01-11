@@ -111,7 +111,7 @@ export const App: React.FC = () => {
                   key: 'export',
                   disabled: !databaseValue,
                   description: !databaseValue ? '数据库为空' : '',
-                  text: '导出数据',
+                  text: '导出备份',
                   onClick: async () => {
                     await backup(
                       `${dayjs().format(
@@ -122,8 +122,8 @@ export const App: React.FC = () => {
                 },
                 {
                   key: 'import',
-                  text: '导入数据',
-                  description: '导入数据, 和当前数据合并。',
+                  text: '导入备份',
+                  description: '导入备份, 和当前数据库合并。',
                   onClick: async () => {
                     const userSelectFile: string | null = await uploadFile();
                     if (!userSelectFile) {
@@ -141,7 +141,7 @@ export const App: React.FC = () => {
                 {
                   key: 'replace',
                   text: '替换数据库',
-                  description: '导入数据库，替换当前数据库',
+                  description: '导入备份，替换当前数据库',
                   onClick: async () => {
                     const userSelectFile: string | null = await uploadFile();
                     if (!userSelectFile) {
@@ -154,10 +154,11 @@ export const App: React.FC = () => {
                   },
                 },
                 {
-                  text: '删除',
+                  text: '删除数据库',
                   key: 'delete',
-                  description: '删除后数据不可恢复',
+                  description: cloudSyncEnable?'云同步开启时无法删除数据库':'删除后数据不可恢复',
                   danger: true,
+                  disabled:cloudSyncEnable,
                   bold: true,
                   onClick: async () => {
                     await settingService.set(DatabaseKey, '');
