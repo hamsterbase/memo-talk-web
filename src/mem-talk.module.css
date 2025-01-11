@@ -1,7 +1,9 @@
 .messages {
   height: 100%;
+  width: 100vw;
   overflow: scroll;
-  padding: 8px;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .messages ::-webkit-scrollbar {
